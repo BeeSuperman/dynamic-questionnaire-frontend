@@ -1,0 +1,44 @@
+<div class="container" *ngIf="questionnaire && userAnswer">
+  <div class="header-section">
+    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+    <h1>{{ questionnaire.title }}</h1>
+    <div class="description-box">
+      <p>{{ questionnaire.description }}</p>
+    </div>
+  </div>
+
+  <div class="confirm-info-section">
+    <div class="info-row">
+      <span class="label">姓名：</span>
+      <span class="value">{{ userAnswer.username }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">手機：</span>
+      <span class="value">{{ userAnswer.phone }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">E-mail：</span>
+      <span class="value">{{ userAnswer.email }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">年齡：</span>
+      <span class="value">{{ userAnswer.age || '未填寫' }}</span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="confirm-questions-section">
+    <div class="ans-item" *ngFor="let q of questionnaire.questions; let i = index">
+      <h3>{{ i + 1 }}. {{ q.title }}</h3>
+      <div class="ans-content">
+        <p>{{ getAnswerText(q.id) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-modify" (click)='onModify()'>修改</button>
+    <button class="btn-final" (click)='onFinalSubmit()'>送出</button>
+  </div>
+</div>

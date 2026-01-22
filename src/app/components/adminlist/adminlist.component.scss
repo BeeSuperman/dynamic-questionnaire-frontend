@@ -1,0 +1,225 @@
+// .container {
+//   max-width: 1100px;
+//   margin: 30px auto;
+//   padding: 0 20px;
+//   font-family: "Microsoft JhengHei", sans-serif;
+
+//   // 搜尋區塊框線 [cite: 182]
+//   .search-section {
+//     border: 1px solid #999;
+//     padding: 20px;
+//     margin-bottom: 20px;
+//     background-color: #fff;
+
+//     .form-group {
+//       margin-bottom: 12px;
+//       display: flex;
+//       align-items: center;
+//       gap: 10px;
+//       font-weight: bold;
+
+//       input { padding: 5px; border: 1px solid #ccc; }
+//       .btn-search {
+//         padding: 5px 25px;
+//         background-color: #da6767;
+//         border: 1px solid #999;
+//         cursor: pointer;
+//         &:hover { background-color: #da6767; }
+//       }
+//     }
+//   }
+
+//   // 管理按鈕 [cite: 202, 210]
+//   .admin-toolbar {
+//     display: flex;
+//     gap: 15px;
+//     margin-bottom: 10px;
+//     .btn-icon {
+//       width: 40px;
+//       height: 40px;
+//       font-size: 22px;
+//       background: #fff;
+//       border: 1px solid #ccc;
+//       cursor: pointer;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       &:hover { background: #f5f5f5; }
+//     }
+//     .btn-delete { color: #ff4d4f; border-color: #ff4d4f; }
+//     .btn-add { color: #1890ff; border-color: #1890ff; }
+//   }
+
+//   // 表格樣式
+//   .admin-table {
+//     width: 100%;
+//     border-collapse: collapse;
+//     border: 1px solid #ccc;
+
+//     th {
+//       background-color: #666; // 深灰色標頭
+//       color: #fff;
+//       padding: 12px;
+//       border: 1px solid #ccc;
+//     }
+//     tbody tr {
+//     transition: background-color 0.2s ease; /* 讓顏色變化更平滑 */
+
+//     &:hover td {
+//       background-color: #f2f2f2 !important; /* 滑鼠移上去時變為淺灰色 */
+//       cursor: pointer; /* 鼠標變成手指形狀，增加互動感 */
+//     }
+//   }
+
+//     td {
+//       padding: 12px;
+//       border: 1px solid #ccc;
+//       text-align: center;
+//       background-color: #fff;
+
+//       &.text-left { text-align: left; padding-left: 15px; }
+
+//       .edit-link {
+//         color: #0000ff; // 藍色連結
+//         text-decoration: underline;
+//         &:hover { color: #00008b; }
+//       }
+
+//       .disabled-text { color: #999; cursor: not-allowed; }
+//     }
+//   }
+
+//   .pagination-container {
+//     margin-top: 20px;
+//     display: flex;
+//     justify-content: center;
+//   }
+// }
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 20px;
+  font-family: "Microsoft JhengHei", sans-serif;
+
+  // 搜尋區塊框線
+  .search-section {
+    border: 1px solid #999;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #fff;
+
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: bold;
+
+      input { padding: 5px; border: 1px solid #ccc; }
+      .btn-search {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 25px;
+        background-color: #da6767;
+        color: white;
+        border: 1px solid #999;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover { background-color: #c55a5a; }
+
+        svg { fill: #fff; }
+      }
+    }
+  }
+
+  // 管理按鈕
+  .admin-toolbar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 22px;
+      background: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      &:hover { background: #f5f5f5; }
+    }
+    .btn-delete { color: #ff4d4f; border-color: #ff4d4f; }
+    .btn-add { color: #1890ff; border-color: #1890ff; }
+  }
+
+  // 表格樣式
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+
+    th {
+      background-color: #666; // 深灰色標頭
+      color: #fff;
+      padding: 12px;
+      border: 1px solid #ccc;
+    }
+
+    tbody tr {
+      transition: background-color 0.2s ease;
+
+      &:hover td {
+        background-color: #f2f2f2 !important;
+      }
+    }
+
+    td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+      background-color: #fff;
+
+      &.text-left { text-align: left; padding-left: 15px; }
+
+      // --- 核心修改：問卷名稱連結 ---
+      .edit-link {
+        color: #000;              // 1. 鼠標未移入時為黑色
+        text-decoration: none;    // 2. 預設無底線
+        font-weight: 500;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #1890ff;         // 3. 鼠標移入變藍色
+          text-decoration: underline; // 4. 鼠標移入顯示底線
+        }
+      }
+
+      // --- 核心修改：前往按鈕 ---
+      a {
+        color: #1890ff;           // 預設藍色
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #40a9ff;         // 鼠標移入變淺藍色
+          text-decoration: underline;
+        }
+      }
+
+      .disabled-text {
+        color: #999;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+}

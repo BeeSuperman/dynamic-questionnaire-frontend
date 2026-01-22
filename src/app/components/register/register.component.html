@@ -1,0 +1,14 @@
+<div class="login-wrapper"> <div class="login-card">
+    <h2>註冊賬號</h2>
+    <div class="login-body">
+      <input type="text" [(ngModel)]="userData.name" placeholder="姓名">
+      <input type="email" [(ngModel)]="userData.email" placeholder="email">
+      <input type="password" [(ngModel)]="userData.password" placeholder="密碼(8-12字)">
+      <input type="text" [(ngModel)]="userData.phone" placeholder="手機">
+      <button class="btn-login" (click)="onRegister()">註冊賬號</button>
+      <div class="footer-links">
+        <a routerLink="/login">回到登錄界面</a>
+      </div>
+    </div>
+  </div>
+</div>

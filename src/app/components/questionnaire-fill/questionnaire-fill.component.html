@@ -1,0 +1,62 @@
+<div class="container" *ngIf="questionnaire">
+  <div class="header-section">
+    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+    <h1>{{ questionnaire.title }}</h1>
+    <p class="description">{{ questionnaire.description }}</p>
+  </div>
+
+  <hr>
+
+  <div class="user-info-section">
+    <div class="form-row">
+      <label>姓名 (必填):</label>
+      <input type="text" [(ngModel)]="userAnswer.username" placeholder="請輸入姓名">
+    </div>
+    <div class="form-row">
+      <label>手機 (必填):</label>
+      <input type="text" [(ngModel)]="userAnswer.phone" placeholder="請輸入手機號碼">
+    </div>
+    <div class="form-row">
+      <label>Email (必填):</label>
+      <input type="email" [(ngModel)]="userAnswer.email" placeholder="請輸入 Email">
+    </div>
+    <div class="form-row">
+      <label>年齡 (選填):</label>
+      <input type="number" [(ngModel)]="userAnswer.age" placeholder="請輸入年齡">
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="questions-section">
+    <div class="question-item" *ngFor="let q of questionnaire.questions; let i = index">
+      <h3>{{ i + 1 }}. {{ q.title }} <span *ngIf="q.required" class="required-star">(必填)</span></h3>
+
+      <div *ngIf="q.type === 'single'">
+        <div *ngFor="let opt of q.options" class="option-row">
+          <input type="radio" [name]="'q'+q.id" [value]="opt.content"
+                 [(ngModel)]="userAnswer.answers[i].value">
+          <label>{{ opt.content }}</label>
+        </div>
+      </div>
+
+      <div *ngIf="q.type === 'multiple'">
+        <div *ngFor="let opt of q.options" class="option-row">
+          <input type="checkbox"
+                 [checked]="userAnswer.answers[i].value.includes(opt.content)"
+                 (change)="onCheckboxChange(q.id, opt.content, $event)">
+          <label>{{ opt.content }}</label>
+        </div>
+      </div>
+
+      <div *ngIf="q.type === 'text'">
+        <textarea [(ngModel)]="userAnswer.answers[i].value" rows="3" placeholder="請在此說明..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-cancel" (click)="onCancel()">返回列表</button>
+    <button class="btn-submit" (click)="onSubmit()">下一步 (確認內容)</button>
+  </div>
+</div>

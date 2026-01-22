@@ -1,0 +1,72 @@
+<div class="container">
+  <div class="search-section">
+    <div class="form-group">
+      <label>問卷名稱:</label>
+      <input type="text" [(ngModel)]="searchTitle" placeholder="搜尋問卷標題...">
+    </div>
+    <div class="form-group">
+      <label>統計時間:</label>
+      <input type="date" [(ngModel)]="searchStartDate"> 到
+      <input type="date" [(ngModel)]="searchEndDate">
+
+      <!-- <button class="btn-search" (click)="onSearch()">搜尋</button> -->
+       <button (click)="onSearch()" class="btn-search">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+          <path
+            d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
+        </svg>
+
+        <span>搜尋</span>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="admin-toolbar">
+    <button class="btn-icon btn-delete" (click)="onDelete()" title="刪除選取項目">🗑</button>
+    <button class="btn-icon btn-add" (click)="navToCreate()" title="新增問卷">+</button>
+  </div>
+
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th style="width: 50px;">選取</th>
+        <th style="width: 80px;">編號</th>
+        <th>名稱</th>
+        <th style="width: 100px;">狀態</th>
+        <th style="width: 120px;">開始時間</th>
+        <th style="width: 120px;">結束時間</th>
+        <th style="width: 80px;">結果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let q of displayedQuestionnaires">
+        <td>
+          <input type="checkbox" (change)="toggleSelect(q.id)" [checked]="selectedIds.has(q.id)">
+        </td>
+        <td>#{{ q.id }}</td>
+        <td class="text-left">
+          <a href="javascript:void(0)" class="edit-link" (click)="onEdit(q)">{{ q.title }}</a>
+        </td>
+        <td>{{ getStatusLabel(q) }}</td>
+        <td>{{ q.startTime | date:'yyyy/MM/dd' }}</td>
+        <td>{{ q.endTime | date:'yyyy/MM/dd' }}</td>
+        <td>
+          <a href="javascript:void(0)"
+             *ngIf="getStatusLabel(q) === '開放中' || getStatusLabel(q) === '已關閉'"
+             (click)="navToResult(q)">前往</a>
+          <span *ngIf="getStatusLabel(q) === '未發佈' || getStatusLabel(q) === '尚未開始'" class="disabled-text">前往</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination-container" *ngIf="questionnaires.length > 0">
+    <mat-paginator
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
+</div>

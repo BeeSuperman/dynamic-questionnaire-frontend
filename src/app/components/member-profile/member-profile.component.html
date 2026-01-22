@@ -1,0 +1,35 @@
+<div class="profile-wrapper">
+  <div class="profile-card">
+    <div class="header">
+      <span class="icon">👤</span>
+      <h2>會員資料</h2> </div>
+
+    <div class="form-body">
+      <div class="form-item">
+        <label>姓名</label>
+        <input type="text" [(ngModel)]="user.name">
+      </div>
+
+      <div class="form-item">
+        <label>信箱</label>
+        <input type="text" [value]="user.email" disabled class="disabled-input">
+        <small class="hint">(不可修改)</small>
+      </div>
+
+      <div class="form-item">
+        <label>新密碼</label>
+        <input type="password" [(ngModel)]="user.password" placeholder="須為8到12個字">
+      </div>
+
+      <div class="form-item">
+        <label>手機</label>
+        <input type="text" [(ngModel)]="user.phone">
+      </div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn-cancel" (click)="onCancel()">取消</button>
+      <button class="btn-confirm" (click)="onConfirm()">確定</button>
+    </div>
+  </div>
+</div>

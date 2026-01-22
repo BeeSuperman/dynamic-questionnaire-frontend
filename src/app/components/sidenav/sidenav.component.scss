@@ -1,0 +1,229 @@
+
+// .sidenav {
+//   position: fixed;
+//   /* 1. 定位到右上角 */
+//   right: 20px;
+//   top: 20px;
+//   /* 2. 改為橫向排列 */
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   gap: 15px; /* 按鈕之間的橫向間距 */
+//   z-index: 1000;
+
+//   .user-info {
+//     display: flex;
+//     flex-direction: row; /* 使用者資訊也改橫向 */
+//     align-items: center;
+//     padding: 5px 15px;
+//     background-color: rgba(92, 85, 99, 0.1);
+//     border-radius: 25px; /* 膠囊形狀 */
+//     margin-bottom: 0;   /* 取消原本的底部間距 */
+//     width: auto;        /* 寬度隨內容變化 */
+//     height: 45px;
+//     transition: all 0.3s;
+
+//     .user-icon {
+//       font-size: 1.2rem;
+//       margin-right: 8px; /* 圖示與文字的距離 */
+//     }
+
+//     .user-details {
+//       /* 橫向模式下預設顯示，或依需求維持 Hover 顯示 */
+//       display: flex;
+//       flex-direction: column;
+//       align-items: flex-start;
+//       text-align: left;
+
+//       .email-label { font-size: 0.7rem; color: #8a3ec9; line-height: 1; }
+//       .email-text {
+//         font-size: 0.9rem;
+//         font-weight: bold;
+//         color: #d15f57;
+//         max-width: 150px;
+//         white-space: nowrap;
+//         overflow: hidden;
+//         text-overflow: ellipsis;
+//       }
+//     }
+//   }
+
+//   .nav-item {
+//     display: flex;
+//     align-items: center;
+//     cursor: pointer;
+//     position: relative;
+
+//     .icon-box {
+//       /* 統一縮小為圓形按鈕，看起來更像右上角的工具欄 */
+//       width: 45px;
+//       height: 45px;
+//       background-color: #b86363;
+//       color: white;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       border-radius: 50%;
+//       font-size: 1.1rem;
+//       box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+//       transition: all 0.3s;
+//     }
+
+//     .nav-text {
+//       /* 重要：提示文字改為在按鈕下方彈出 */
+//       position: absolute;
+//       top: 55px;
+//       left: 50%;
+//       transform: translateX(-50%) translateY(-10px);
+//       background-color: #8b2d2d;
+//       color: white;
+//       padding: 6px 12px;
+//       border-radius: 4px;
+//       font-size: 12px;
+//       white-space: nowrap;
+//       opacity: 0;
+//       visibility: hidden;
+//       transition: all 0.2s;
+//     }
+
+//     &:hover {
+//       .icon-box { background-color: #6d2323; transform: scale(1.1); }
+//       .nav-text {
+//         opacity: 1;
+//         visibility: visible;
+//         transform: translateX(-50%) translateY(0);
+//       }
+//     }
+//   }
+
+//   /* 橫向模式下不需要原本的水平分割線，改為垂直的小線段或移除 */
+//   .nav-divider {
+//     border: none;
+//     border-left: 1px solid #ddd;
+//     height: 25px;
+//     width: 1px;
+//     margin: 0 5px;
+//   }
+
+//   /* 移除原本左側模式的寬度控制 */
+//   &:hover {
+//     .user-info { width: auto; }
+//   }
+
+// }
+.sidenav {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+
+  .user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 15px;
+    background-color: rgba(92, 85, 99, 0.1);
+    border-radius: 25px;
+    height: 45px;
+    transition: all 0.3s;
+
+    .user-icon {
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+
+      .email-label { font-size: 0.7rem; color: #8a3ec9; line-height: 1; }
+      .email-text {
+        font-size: 0.9rem;
+        font-weight: bold;
+        color: #d15f57;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+
+    .icon-box {
+      width: 45px;
+      height: 45px;
+      background-color: #b86363;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+    }
+
+    .nav-text {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background-color: #8b2d2d;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.2s;
+    }
+
+    &:hover {
+      .icon-box { background-color: #6d2323; transform: scale(1.1); }
+      .nav-text {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  }
+
+  .nav-divider {
+    border: none;
+    border-left: 1px solid #ddd;
+    height: 25px;
+    width: 1px;
+    margin: 0 5px;
+  }
+}
+
+/* --- SweetAlert2 字體與圖示全局覆蓋 --- */
+::ng-deep {
+  .swal-custom-title {
+    font-size: 2rem !important;
+    color: #8b2d2d !important;
+    font-weight: bold !important;
+    margin-bottom: 15px !important;
+  }
+  .swal-custom-text {
+    font-size: 1.2rem !important;
+    color: #555 !important;
+  }
+  .swal2-icon {
+    margin-top: 20px !important;
+    transform: scale(1.2) !important;
+  }
+}

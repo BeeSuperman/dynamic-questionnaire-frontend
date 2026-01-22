@@ -1,0 +1,139 @@
+// .chart-box-flex {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-around;
+//   margin-top: 20px;
+//   background: #fdf5e6; // 淺米色背景
+//   padding: 20px;
+//   border: 1px solid #8b4513;
+//   border-radius: 8px;
+
+//   .chart-wrapper {
+//     width: 300px;
+//     height: 300px;
+//   }
+
+//   .data-list {
+//     flex: 1;
+//     max-width: 400px;
+//     padding-left: 30px;
+
+//     .data-row {
+//       display: flex;
+//       justify-content: space-between;
+//       padding: 10px 0;
+//       border-bottom: 1px solid #ddd;
+//       font-size: 1.1rem;
+
+//       .percent { font-weight: bold; width: 60px; }
+//       .label { flex: 1; padding: 0 10px; }
+//       .count { color: #888; }
+//     }
+//   }
+// }
+
+// .text-ans-list {
+//   background: #fdf5e6;
+//   padding: 15px;
+//   border-radius: 8px;
+//   border: 1px solid #8b4513;
+//   .text-bubble {
+//     background: #fff;
+//     padding: 10px;
+//     margin-bottom: 8px;
+//     border-radius: 5px;
+//     box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+//   }
+// }
+/* 原有樣式保持 */
+.chart-box-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
+  background: #fdf5e6;
+  padding: 20px;
+  border: 1px solid #8b4513;
+  border-radius: 8px;
+
+  .chart-wrapper {
+    width: 300px;
+    height: 300px;
+  }
+
+  .data-list {
+    flex: 1;
+    max-width: 400px;
+    padding-left: 30px;
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.1rem;
+
+      .percent { font-weight: bold; width: 60px; }
+      .label { flex: 1; padding: 0 10px; }
+      .count { color: #888; }
+    }
+  }
+}
+
+.text-ans-list {
+  background: #fdf5e6;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #8b4513;
+  .text-bubble {
+    background: #fff;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+  }
+}
+
+/* 新增：暫無人填寫問卷的樣式 */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 350px;
+  margin: 30px 0;
+  background: #f9f9f9;
+  border: 2px dashed #ccc;
+  border-radius: 15px;
+
+  .empty-content {
+    text-align: center;
+
+    .empty-icon {
+      font-size: 5rem;
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      color: #8b4513; /* 配合標題色 */
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+}
+
+.action-buttons {
+  margin-top: 30px;
+  .btn-back {
+    padding: 10px 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+}

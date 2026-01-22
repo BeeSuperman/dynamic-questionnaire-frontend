@@ -1,0 +1,91 @@
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #a5a5a5; // 參考 PPT 的灰色背景
+
+  .login-card {
+    background: #fdf5e6; // 淺米色背景
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+
+    .login-header {
+      margin-bottom: 30px;
+      h1 { font-size: 2.5rem; color: #8b4513; margin: 0; }
+      p { color: #666; margin-top: 5px; }
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+
+      input {
+        width: 100%;
+        padding: 12px 15px;
+        border: none;
+        background: #ced47d; // PPT 中的黃綠色輸入框
+        border-radius: 10px;
+        font-size: 1rem;
+        box-sizing: border-box;
+
+        &::placeholder { color: #555; }
+      }
+    }
+
+    .password-group {
+      .toggle-eye {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        opacity: 0.7;
+      }
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background-color: #8b2d2d; // 深紅色按鈕
+      color: white;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+
+      &:hover { background-color: #6d2323; }
+    }
+
+    .footer-links {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      span { color: #666; }
+      a { color: #8b4513; text-decoration: none; margin-left: 5px; font-weight: bold; }
+    }
+  }
+  /* --- SweetAlert2 登錄界面字體微調 --- */
+::ng-deep {
+  .swal2-title {
+    font-size: 1.5rem !important; /* 標題適中 */
+    color: #444 !important;
+  }
+  .swal2-html-container {
+    font-size: 1.1rem !important; /* 內容字體縮小 */
+    color: #666 !important;
+  }
+  .swal2-confirm {
+    padding: 10px 30px !important; /* 按鈕不要太臃腫 */
+    font-size: 1rem !important;
+  }
+  .swal2-icon {
+    transform: scale(0.9) !important; /* 圖示稍微縮小 */
+  }
+}
+
+}

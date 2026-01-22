@@ -1,0 +1,304 @@
+// /* 核心容器 */
+// .container {
+//   max-width: 1200px;
+//   margin: 30px auto;
+//   padding: 30px;
+//   background-color: #ffffff;
+//   border-radius: 12px;
+//   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* 外層淡淡的陰影 */
+//   font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+
+//   /* 搜尋區塊卡片化 */
+//   .search-section {
+//     background-color: #f8f9fa;
+//     border: none; /* 移除原本的硬框線 */
+//     border-radius: 10px;
+//     padding: 25px;
+//     margin-bottom: 30px;
+//     display: flex;
+//     flex-direction: column;
+//     gap: 20px;
+//     box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); /* 內凹感 */
+
+//     .form-group {
+//       display: flex;
+//       align-items: center;
+//       gap: 15px;
+//       font-weight: 600;
+//       color: #444;
+
+//       label {
+//         min-width: 80px;
+//       }
+
+//       input[type="text"], input[type="date"] {
+//         padding: 8px 12px;
+//         border: 1.5px solid #dee2e6;
+//         border-radius: 6px;
+//         outline: none;
+//         transition: border-color 0.2s;
+
+//         &:focus {
+//           border-color: #bda0a0; /* 聚焦時變為您的主色 */
+//         }
+//       }
+
+//       /* 搜尋按鈕美化 */
+//       .btn-search {
+//         display: inline-flex;
+//         align-items: center;
+//         justify-content: center;
+//         gap: 8px;
+//         padding: 10px 24px;
+//         background: linear-gradient(135deg, #947e7e 0%, #834040 100%); /* 漸層紅 */
+//         color: white;
+//         border: none;
+//         border-radius: 30px; /* 圓角按鈕 */
+//         cursor: pointer;
+//         font-size: 15px;
+//         font-weight: 500;
+//         box-shadow: 0 4px 10px rgba(139, 45, 45, 0.3);
+//         transition: all 0.3s ease;
+
+//         &:hover {
+//           transform: translateY(-2px); /* 懸停輕微浮起 */
+//           box-shadow: 0 6px 15px rgba(139, 45, 45, 0.4);
+
+//         }
+
+//         .icon-svg {
+//           width: 18px;
+//           height: 18px;
+//           fill: currentColor;
+//         }
+//       }
+//     }
+//   }
+// }
+
+// /* 表格美化 */
+// .q-table {
+//   width: 100%;
+//   border-collapse: separate; /* 改為分開，為了實作圓角 */
+//   border-spacing: 0;
+//   margin-top: 15px;
+//   overflow: hidden;
+//   border: 1px solid #eee;
+//   border-radius: 8px;
+
+//   thead {
+//     tr {
+//       background: #b1bbc7; /* 經典深色表頭 */
+//       color: #ffffff;
+//     }
+//   }
+
+//   th {
+//     padding: 16px;
+//     font-weight: 500;
+//     text-transform: uppercase;
+//     font-size: 20px;
+//     letter-spacing: 0.5px;
+//   }
+
+//   td {
+//     padding: 16px;
+//     border-bottom: 1px solid #f1f1f1;
+//     color: #555;
+//     vertical-align: middle;
+//   }
+
+//   /* 偶數行背景 */
+//   tr:nth-child(even) {
+//     background-color: #fafafa;
+//   }
+
+//   tr:last-child td {
+//     border-bottom: none;
+//   }
+
+//   /* 懸停效果 */
+//   tr:not(thead tr):hover {
+//     background-color:#eee5e5 !important;
+//     transition: background-color 0.2s;
+//   }
+
+//   /* 名稱連結 */
+//   a {
+//     color: #8b2d2d;
+//     font-weight: 600;
+//     text-decoration: none;
+//     border-bottom: 1px solid transparent;
+
+//     &:hover {
+//       border-bottom: 1px solid #8b2d2d;
+//     }
+//   }
+// }
+
+// /* 分頁器區塊 */
+// .pagination-container {
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   margin-top: 25px;
+//   padding: 20px;
+//   background-color: #fcfcfc;
+//   border-radius: 10px;
+//   border: 1px solid #f1f1f1;
+// }
+
+// /* 沒有數據 */
+// .no-data {
+//   text-align: center;
+//   padding: 50px;
+//   color: #adb5bd;
+//   font-style: italic;
+// }
+/* 核心容器 */
+.container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+
+  .search-section {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-weight: 600;
+      color: #444;
+
+      label { min-width: 80px; }
+
+      input[type="text"], input[type="date"] {
+        padding: 8px 12px;
+        border: 1.5px solid #dee2e6;
+        border-radius: 6px;
+        outline: none;
+        transition: border-color 0.2s;
+        &:focus { border-color: #bda0a0; }
+      }
+
+      .btn-search {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, #947e7e 0%, #834040 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        box-shadow: 0 4px 10px rgba(139, 45, 45, 0.3);
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(139, 45, 45, 0.4);
+        }
+      }
+    }
+  }
+}
+
+/* 表格美化 - 修正對齊與懸停變色 */
+.q-table {
+  width: 100%;
+  /* 關鍵修正 1: 改回 collapse 確保內外邊框對齊 */
+  border-collapse: collapse;
+  margin-top: 15px;
+  border: 1px solid #dee2e6;
+  table-layout: fixed; /* 讓欄位寬度固定，對齊更整齊 */
+
+  thead {
+    tr {
+      background: #b1bbc7;
+      color: #ffffff;
+    }
+  }
+
+  th, td {
+    padding: 16px;
+    text-align: center; /* 確保內容水平置中對齊 */
+    border: 1px solid #dee2e6; /* 明確邊框線 */
+    word-wrap: break-word; /* 防止文字過長撐破表格 */
+  }
+
+  th {
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    color: #555;
+    vertical-align: middle;
+  }
+
+  /* 偶數行背景 */
+  tr:nth-child(even) { background-color: #fafafa; }
+
+  /* 懸停行背景色 */
+  tr:not(thead tr):hover {
+    background-color: #fceeee !important;
+    transition: background-color 0.2s;
+  }
+
+  /* 關鍵修正 2: 問卷名稱與「前往」的藍色懸停效果 */
+  a {
+    color: #8b2d2d; /* 初始深紅色 */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s, border-bottom 0.2s;
+
+    /* 滑鼠移上去時變藍色 */
+    &:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+  }
+
+  /* 針對特定連結類別 (stat-link 是您的前往按鈕類名) */
+  .stat-link {
+    color: #8b2d2d;
+    &:hover {
+      color: #0056b3;
+    }
+  }
+}
+
+/* 分頁器區塊 */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding: 10px 20px;
+  background-color: #fcfcfc;
+  border-radius: 10px;
+  border: 1px solid #f1f1f1;
+}
+
+.no-data {
+  text-align: center;
+  padding: 50px;
+  color: #adb5bd;
+  font-style: italic;
+}

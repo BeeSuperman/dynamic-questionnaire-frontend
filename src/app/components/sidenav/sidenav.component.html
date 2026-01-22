@@ -1,0 +1,64 @@
+<!-- <div class="sidenav" *ngIf="isLoggedIn">
+
+  <div class="user-info">
+    <div class="user-icon">👤</div>
+    <div class="user-details">
+      <span class="email-label">當前登入：</span>
+      <span class="email-text">{{ userEmail }}</span>
+    </div>
+  </div>
+
+  <hr class="nav-divider">
+
+  <div class="nav-item" (click)="goToList()">
+    <div class="icon-box">📋</div>
+    <span class="nav-text">返回列表頁</span>
+  </div>
+
+  <div class="nav-item" *ngIf="isAdmin" (click)="router.navigate(['/adminlist/design'])">
+    <div class="icon-box">➕</div>
+    <span class="nav-text">新增問卷</span>
+  </div>
+
+  <div class="nav-item" (click)="router.navigate(['/member-profile'])">
+    <div class="icon-box">👤</div>
+    <span class="nav-text">修改會員資料</span>
+  </div>
+
+  <div class="nav-item logout" (click)="onLogout()">
+    <div class="icon-box">🔓</div>
+    <span class="nav-text">登出系統</span>
+  </div>
+</div> -->
+<div class="sidenav" *ngIf="isLoggedIn">
+
+  <div class="user-info">
+    <div class="user-icon">👤</div>
+    <div class="user-details">
+      <span class="email-label">當前登入：</span>
+      <span class="email-text">{{ userEmail }}</span>
+    </div>
+  </div>
+
+  <hr class="nav-divider">
+
+  <!-- <div class="nav-item" (click)="goToList()">
+    <div class="icon-box">📋</div>
+    <span class="nav-text">返回列表頁</span>
+  </div> -->
+
+  <!-- <div class="nav-item" *ngIf="isAdmin" (click)="router.navigate(['/adminlist/design'])">
+    <div class="icon-box">➕</div>
+    <span class="nav-text">新增問卷</span>
+  </div> -->
+
+  <div class="nav-item" (click)="router.navigate(['/member-profile'])">
+    <div class="icon-box">👤</div>
+    <span class="nav-text">修改會員資料</span>
+  </div>
+
+  <div class="nav-item logout" (click)="onLogout()">
+    <div class="icon-box">🔓</div>
+    <span class="nav-text">登出系統</span>
+  </div>
+</div>

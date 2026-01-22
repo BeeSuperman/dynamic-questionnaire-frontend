@@ -1,0 +1,63 @@
+/* 容器置中並限制寬度 */
+.login-card {
+  width: 100%;
+  max-width: 400px; /* 限制寬度，避免在大螢幕上太寬 */
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 標題放大 */
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* 核心：將 body 設為 Flex 佈局並垂直排列 */
+.login-body {
+  display: flex;
+  flex-direction: column; /* 讓子元素垂直排列 */
+  gap: 15px; /* 設定元件之間的間距 */
+}
+
+/* 輸入框與按鈕的樣式優化 */
+input, .btn-login {
+  padding: 12px 15px; /* 增加內距讓框體變大 */
+  font-size: 18px;    /* 放大字體 */
+  border-radius: 5px; /* 圓角看起來更現代 */
+  border: 1px solid #ccc;
+  width: 100%;        /* 寬度撐滿容器 */
+  box-sizing: border-box; /* 確保 padding 不會撐破寬度 */
+}
+
+/* 按鈕美化 */
+.btn-login {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-login:hover {
+  background-color: #0056b3;
+}
+
+/* 底部連結區域 */
+.footer-links {
+  margin-top: 20px;
+}
+
+/* 連結原始樣式：無底線 */
+.footer-links a {
+  text-decoration: none;
+  color: #666;
+  font-size: 16px;
+  transition: all 0.3s; /* 讓變化平滑一點 */
+}
+
+/* 鼠標懸停：變色 + 底線 */
+.footer-links a:hover {
+  color: #007bff;        /* 變藍色 */
+  text-decoration: underline; /* 出現底線 */
+}

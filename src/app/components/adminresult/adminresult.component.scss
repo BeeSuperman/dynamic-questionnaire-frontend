@@ -1,0 +1,205 @@
+// .results-container {
+//   max-width: 1000px;
+//   margin: 20px auto;
+//   font-family: sans-serif;
+
+//   .tab-header {
+//     display: flex;
+//     gap: 4px;
+//     button {
+//       padding: 12px 30px;
+//       border: none;
+//       background: #dcdcdc;
+//       cursor: pointer;
+//       font-weight: bold;
+//       border-radius: 8px 8px 0 0;
+//       &.active {
+//         background: #8d4a3e; // 深紅棕色，符合圖片樣式
+//         color: white;
+//       }
+//     }
+//   }
+
+//   .results-body {
+//     border: 2px solid #8d4a3e;
+//     background: #fff;
+//     min-height: 500px;
+//     padding: 30px;
+//   }
+
+//   // 列表樣式
+//   .data-table {
+//     width: 100%;
+//     border-collapse: collapse;
+//     th { background: #9b5c51; color: white; padding: 12px; }
+//     td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+//     a { color: #0000ff; text-decoration: underline; }
+//   }
+
+//   // 統計卡片樣式
+//   .stat-question-card {
+//     margin-bottom: 40px;
+//     .q-display-title { border-left: 5px solid #36a2eb; padding-left: 15px; margin-bottom: 20px; }
+
+//     .stat-visual-box {
+//       display: flex;
+//       align-items: center;
+//       justify-content: space-around;
+//       gap: 30px;
+//       .chart-box { width: 300px; height: 300px; }
+
+//       // 動態數據列表樣式
+//       .data-list-box {
+//         flex: 1;
+//         ::ng-deep .stat-row {
+//           display: flex;
+//           justify-content: space-between;
+//           padding: 15px 0;
+//           border-bottom: 1px solid #f0f0f0;
+//           font-size: 1.1rem;
+//           .stat-percent { font-weight: bold; width: 60px; }
+//           .stat-label { flex: 1; padding: 0 15px; }
+//           .stat-count { color: #888; }
+//         }
+//       }
+//     }
+//   }
+
+//   .footer { margin-top: 20px; text-align: right; }
+// }
+.results-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  font-family: sans-serif;
+
+  .tab-header {
+    display: flex;
+    gap: 4px;
+    button {
+      padding: 12px 30px;
+      border: none;
+      background: #dcdcdc;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.2s;
+      &.active {
+        background: #8d4a3e; // 深紅棕色
+        color: white;
+      }
+    }
+  }
+
+  .results-body {
+    border: 2px solid #8d4a3e;
+    background: #fff;
+    min-height: 450px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+
+    /* 暫無資料提示樣式 */
+    .empty-state {
+      text-align: center;
+      margin: auto; // 水平垂直居中
+      .empty-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        opacity: 0.3;
+      }
+      h3 {
+        color: #8d4a3e;
+        font-size: 26px;
+        margin-bottom: 10px;
+      }
+      p {
+        color: #888;
+        font-size: 16px;
+      }
+    }
+  }
+
+  /* 列表樣式 */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    th { background: #9b5c51; color: white; padding: 12px; }
+    td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+    a { color: #0000ff; text-decoration: underline; }
+  }
+
+  /* 詳情視圖樣式 */
+  .detail-pane {
+    .info-group {
+      p { margin: 10px 0; font-size: 1.1rem; }
+    }
+    .answer-list {
+      margin-top: 20px;
+      .q-block {
+        margin-bottom: 20px;
+        .q-title { font-weight: bold; color: #8d4a3e; margin-bottom: 5px; }
+        .q-ans { background: #f9f9f9; padding: 10px; border-radius: 5px; }
+      }
+    }
+    .actions {
+      margin-top: 20px;
+      button { padding: 8px 20px; cursor: pointer; }
+    }
+  }
+
+  /* 統計圖表樣式 */
+  .stat-question-card {
+    margin-bottom: 40px;
+    .q-display-title { border-left: 5px solid #36a2eb; padding-left: 15px; margin-bottom: 20px; }
+    .stat-visual-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 30px;
+      .chart-box { width: 300px; height: 300px; }
+      .data-list-box {
+        flex: 1;
+        ::ng-deep .stat-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 15px 0;
+          border-bottom: 1px solid #f0f0f0;
+          font-size: 1.1rem;
+          .stat-percent { font-weight: bold; width: 60px; }
+          .stat-label { flex: 1; padding: 0 15px; }
+          .stat-count { color: #888; }
+        }
+      }
+    }
+  }
+
+  /* 底部按鈕美化與放大 */
+  .footer {
+    margin-top: 30px;
+    text-align: right;
+
+    .btn-exit {
+      padding: 15px 45px; // 增加按鈕寬高
+      font-size: 18px;    // 放大字體
+      font-weight: bold;
+      color: #8d4a3e;
+      background: #ffffff;
+      border: 2px solid #8d4a3e;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+      &:hover {
+        background: #8d4a3e;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(141, 74, 62, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}

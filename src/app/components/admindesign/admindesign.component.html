@@ -1,0 +1,389 @@
+<!--
+<div class="admin-design-container">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">問卷</button>
+    <button [class.active]="activeTab === 'questions'" (click)="nextStep()">題目</button>
+    <button [class.active]="activeTab === 'confirm'" (click)="goToConfirm()">預覽確認</button>
+  </div>
+
+  <div class="design-content">
+    <div *ngIf="activeTab === 'info'" class="tab-pane">
+      <div class="form-group">
+        <label>問卷名稱:</label>
+        <input type="text" [(ngModel)]="questionnaire.title" placeholder="請輸入標題">
+      </div>
+      <div class="form-group">
+        <label>問卷說明:</label>
+        <textarea [(ngModel)]="questionnaire.description" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label>開始時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.startTime)" (ngModelChange)="onDateChange('start', $event)" [min]="todayStr">
+      </div>
+      <div class="form-group">
+        <label>結束時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.endTime)" (ngModelChange)="onDateChange('end', $event)" [min]="formatDate(questionnaire.startTime)">
+      </div>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="cancel()">取消</button>
+        <button class="btn-next" (click)="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'questions'" class="tab-pane">
+      <button class="btn-add-q" (click)="openAddModal()">加入問題</button>
+      <table class="q-table">
+        <thead>
+          <tr>
+            <th>編號</th><th>內容</th><th>種類</th><th>必填</th><th>編輯</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of questionnaire.questions; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="text-left">{{ q.title }}</td>
+            <td>{{ q.type === 'single' ? '單選' : (q.type === 'multiple' ? '多選' : '文字') }}</td>
+            <td><input type="checkbox" [checked]="q.required" disabled></td>
+            <td>
+              <button class="btn-small" (click)="editQuestion(i)">編輯</button>
+              <button class="btn-small btn-del" (click)="deleteQuestion(i)">刪除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'info'">上一步</button>
+        <button class="btn-preview" (click)="goToConfirm()">預覽確認</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'confirm'" class="tab-pane confirm-view">
+      <div class="confirm-box">
+        <p class="date-header">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+        <h2 class="text-center">{{ questionnaire.title }}</h2>
+        <div class="desc-box">{{ questionnaire.description }}</div>
+        <hr>
+        <div class="q-preview-list">
+          <div class="q-item" *ngFor="let q of questionnaire.questions; let i = index">
+            <p><strong>{{ i + 1 }}. {{ q.title }}</strong> ({{ q.type === 'single' ? '單選' : (q.type === 'multiple' ? '多選' : '文字') }}) <span *ngIf="q.required" style="color:red">*必填</span></p>
+            <ul *ngIf="q.type !== 'text'">
+              <li *ngFor="let opt of q.options">{{ opt.content }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'questions'">返回修改</button>
+        <button class="btn-save" (click)="finalSave(false)">僅儲存</button>
+        <button class="btn-publish" (click)="finalSave(true)">儲存併發佈</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ editingQuestionIndex !== null ? '編輯問題' : '新增問題' }}</h3>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>問題名稱：</label>
+          <input type="text" [(ngModel)]="currentEditQuestion.title">
+          <select [(ngModel)]="currentEditQuestion.type">
+            <option value="single">單選</option>
+            <option value="multiple">多選</option>
+            <option value="text">文字</option>
+          </select>
+          <label><input type="checkbox" [(ngModel)]="currentEditQuestion.required"> 必填</label>
+        </div>
+        <div class="options-box" *ngIf="currentEditQuestion.type !== 'text'">
+          <div class="opt-row" *ngFor="let opt of currentEditQuestion.options; let j = index">
+            <span>{{ j + 1 }}.</span>
+            <input type="text" [(ngModel)]="opt.content">
+          </div>
+          <button class="btn-plus" (click)="addOption()">+ 新增選項</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-gray" (click)="isModalOpen = false">取消</button>
+        <button class="btn-confirm" (click)="confirmQuestion()">確定</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+<!-- ----------------------------------------- -->
+<!-- <div class="admin-design-container">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">問卷</button>
+    <button [class.active]="activeTab === 'questions'" (click)="nextStep()">題目</button>
+    <button [class.active]="activeTab === 'confirm'" (click)="goToConfirm()">預覽確認</button>
+  </div>
+
+  <div class="design-content">
+    <div *ngIf="activeTab === 'info'" class="tab-pane">
+      <div class="form-group">
+        <label>問卷名稱:</label>
+        <input type="text" [(ngModel)]="questionnaire.title" placeholder="請輸入標題">
+      </div>
+      <div class="form-group">
+        <label>問卷說明:</label>
+        <textarea [(ngModel)]="questionnaire.description" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label>開始時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.startTime)" (ngModelChange)="onDateChange('start', $event)" [min]="todayStr">
+      </div>
+      <div class="form-group">
+        <label>結束時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.endTime)" (ngModelChange)="onDateChange('end', $event)" [min]="formatDate(questionnaire.startTime)">
+      </div>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="cancel()">取消</button>
+        <button class="btn-next" (click)="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'questions'" class="tab-pane">
+      <button class="btn-add-q" (click)="openAddModal()">加入問題</button>
+      <table class="q-table">
+        <thead>
+          <tr>
+            <th>編號</th><th>內容</th><th>種類</th><th>必填</th><th>編輯</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of questionnaire.questions; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="text-left">{{ q.title }}</td>
+            <td>{{ q.type === 'single' ? '單選' : (q.type === 'multiple' ? '多選' : '文字') }}</td>
+            <td><input type="checkbox" [checked]="q.required" disabled></td>
+            <td>
+              <button class="btn-small" (click)="editQuestion(i)">編輯</button>
+              <button class="btn-small btn-del" (click)="deleteQuestion(i)">刪除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'info'">上一步</button>
+        <button class="btn-preview" (click)="goToConfirm()">預覽確認</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'confirm'" class="tab-pane confirm-view">
+      <div class="confirm-box">
+        <p class="date-header">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+        <h2 class="text-center">{{ questionnaire.title }}</h2>
+        <div class="desc-box">{{ questionnaire.description }}</div>
+        <hr>
+
+        <div class="user-basic-info-preview">
+          <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+            <div style="flex: 1;">姓名：<input type="text" placeholder="預覽姓名" disabled style="width: 100%; padding: 8px;"></div>
+            <div style="flex: 1;">年齡：<input type="number" placeholder="預覽年齡" disabled style="width: 100%; padding: 8px;"></div>
+          </div>
+          <div style="display: flex; gap: 20px;">
+            <div style="flex: 1;">Email：<input type="text" placeholder="預覽 Email" disabled style="width: 100%; padding: 8px;"></div>
+            <div style="flex: 1;">手機：<input type="text" placeholder="預覽手機" disabled style="width: 100%; padding: 8px;"></div>
+          </div>
+        </div>
+        <hr>
+
+        <div class="q-preview-list">
+          <div class="q-item" *ngFor="let q of questionnaire.questions; let i = index" style="margin-bottom: 25px;">
+            <p><strong>{{ i + 1 }}. {{ q.title }}</strong> ({{ q.type === 'single' ? '單選' : (q.type === 'multiple' ? '多選' : '文字') }}) <span *ngIf="q.required" style="color:red">*必填</span></p>
+
+            <ul *ngIf="q.type !== 'text'" style="list-style: none; padding-left: 20px;">
+              <li *ngFor="let opt of q.options" style="margin-bottom: 8px;">
+                <input [type]="q.type === 'single' ? 'radio' : 'checkbox'" disabled> {{ opt.content }}
+              </li>
+            </ul>
+
+            <div *ngIf="q.type === 'text'" style="margin-top: 10px;">
+              <textarea rows="3" placeholder="使用者填寫區域..." disabled
+                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; resize: none;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'questions'">返回修改</button>
+        <button class="btn-save" (click)="finalSave(false)">僅儲存</button>
+        <button class="btn-publish" (click)="finalSave(true)">儲存併發佈</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ editingQuestionIndex !== null ? '編輯問題' : '新增問題' }}</h3>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>問題名稱：</label>
+          <input type="text" [(ngModel)]="currentEditQuestion.title">
+          <select [(ngModel)]="currentEditQuestion.type">
+            <option value="single">單選</option>
+            <option value="multiple">多選</option>
+            <option value="text">文字</option>
+          </select>
+          <label><input type="checkbox" [(ngModel)]="currentEditQuestion.required"> 必填</label>
+        </div>
+        <div class="options-box" *ngIf="currentEditQuestion.type !== 'text'">
+          <div class="opt-row" *ngFor="let opt of currentEditQuestion.options; let j = index">
+            <span>{{ j + 1 }}.</span>
+            <input type="text" [(ngModel)]="opt.content">
+          </div>
+          <button class="btn-plus" (click)="addOption()">+ 新增選項</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-gray" (click)="isModalOpen = false">取消</button>
+        <button class="btn-confirm" (click)="confirmQuestion()">確定</button>
+      </div>
+    </div>
+  </div>
+</div> -->
+<div class="admin-design-container">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'info'" (click)="activeTab = 'info'">問卷</button>
+    <button [class.active]="activeTab === 'questions'" (click)="nextStep()">題目</button>
+    <button [class.active]="activeTab === 'confirm'" (click)="goToConfirm()">預覽確認</button>
+  </div>
+
+  <div class="design-content">
+    <div *ngIf="activeTab === 'info'" class="tab-pane">
+      <div class="form-group">
+        <label>問卷名稱:</label>
+        <input type="text" [(ngModel)]="questionnaire.title" placeholder="請輸入標題">
+      </div>
+      <div class="form-group">
+        <label>問卷說明:</label>
+        <textarea [(ngModel)]="questionnaire.description" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+        <label>開始時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.startTime)" (ngModelChange)="onDateChange('start', $event)" [min]="todayStr">
+      </div>
+      <div class="form-group">
+        <label>結束時間:</label>
+        <input type="date" [ngModel]="formatDate(questionnaire.endTime)" (ngModelChange)="onDateChange('end', $event)" [min]="formatDate(questionnaire.startTime)">
+      </div>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="cancel()">取消</button>
+        <button class="btn-next" (click)="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'questions'" class="tab-pane">
+      <button class="btn-add-q" (click)="openAddModal()">加入問題</button>
+      <table class="q-table">
+        <thead>
+          <tr>
+            <th>編號</th><th>內容</th><th>種類</th><th>必填</th><th>編輯</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of questionnaire.questions; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td class="text-left">{{ q.title }}</td>
+            <td>{{ q.type === 'single' ? '單選' : (q.type === 'multiple' ? '多選' : '文字') }}</td>
+            <td><input type="checkbox" [checked]="q.required" disabled></td>
+            <td>
+              <button class="btn-small" (click)="editQuestion(i)">編輯</button>
+              <button class="btn-small btn-del" (click)="deleteQuestion(i)">刪除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'info'">上一步</button>
+        <button class="btn-preview" (click)="goToConfirm()">預覽確認</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'confirm'" class="tab-pane confirm-view">
+      <div class="confirm-box">
+        <p class="date-header">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+        <h2 class="text-center preview-main-title">{{ questionnaire.title }}</h2>
+
+        <div class="preview-description-container">
+          {{ questionnaire.description }}
+        </div>
+
+        <div class="user-info-section">
+          <div class="info-row">
+            <label>姓名 (必填):</label>
+            <input type="text" placeholder="請輸入姓名" disabled>
+          </div>
+          <div class="info-row">
+            <label>手機 (必填):</label>
+            <input type="text" placeholder="請輸入手機號碼" disabled>
+          </div>
+          <div class="info-row">
+            <label>Email (必填):</label>
+            <input type="text" placeholder="請輸入 Email" disabled>
+          </div>
+          <div class="info-row">
+            <label>年齡 (選填):</label>
+            <input type="text" placeholder="請輸入年齡" disabled>
+          </div>
+        </div>
+
+        <hr class="preview-divider">
+
+        <div class="q-preview-list">
+          <div class="q-item" *ngFor="let q of questionnaire.questions; let i = index">
+            <p class="q-title">
+              <strong>{{ i + 1 }}. {{ q.title }}</strong>
+              <span class="required-tag" *ngIf="q.required">(必填)</span>
+            </p>
+
+            <div class="options-container">
+              <ul *ngIf="q.type !== 'text'" class="preview-options">
+                <li *ngFor="let opt of q.options">
+                  <input [type]="q.type === 'single' ? 'radio' : 'checkbox'" disabled>
+                  <span>{{ opt.content }}</span>
+                </li>
+              </ul>
+              <textarea *ngIf="q.type === 'text'" rows="3" placeholder="請輸入回答..." disabled></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-gray" (click)="activeTab = 'questions'">返回修改</button>
+        <button class="btn-save" (click)="finalSave(false)">僅儲存</button>
+        <button class="btn-publish" (click)="finalSave(true)">儲存併發佈</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ editingQuestionIndex !== null ? '編輯問題' : '新增問題' }}</h3>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>問題名稱：</label>
+          <input type="text" [(ngModel)]="currentEditQuestion.title">
+          <select [(ngModel)]="currentEditQuestion.type">
+            <option value="single">單選</option>
+            <option value="multiple">多選</option>
+            <option value="text">文字</option>
+          </select>
+          <label><input type="checkbox" [(ngModel)]="currentEditQuestion.required"> 必填</label>
+        </div>
+        <div class="options-box" *ngIf="currentEditQuestion.type !== 'text'">
+          <div class="opt-row" *ngFor="let opt of currentEditQuestion.options; let j = index">
+            <span>{{ j + 1 }}.</span>
+            <input type="text" [(ngModel)]="opt.content">
+          </div>
+          <button class="btn-plus" (click)="addOption()">+ 新增選項</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-gray" (click)="isModalOpen = false">取消</button>
+        <button class="btn-confirm" (click)="confirmQuestion()">確定</button>
+      </div>
+    </div>
+  </div>
+</div>

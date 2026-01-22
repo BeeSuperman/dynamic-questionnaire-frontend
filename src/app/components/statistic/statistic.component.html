@@ -1,0 +1,82 @@
+<!-- <div class="container" *ngIf="questionnaire">
+  <div class="header-section">
+    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+    <h1>{{ questionnaire.title }}</h1>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-item" *ngFor="let q of questionnaire.questions">
+      <h3>{{ q.title }}</h3>
+
+      <div class="chart-box-flex" *ngIf="q.type !== 'text'">
+        <div class="chart-wrapper">
+          <canvas #pieChart></canvas>
+        </div>
+
+        <div class="data-list">
+          <div class="data-row" *ngFor="let opt of q.options; let idx = index">
+            <span class="percent">{{ getPercentage(q, idx) }}</span>
+            <span class="label">{{ opt.content }}</span>
+            <span class="count">{{ calculateVoteCounts(q)[idx] }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-ans-list" *ngIf="q.type === 'text'">
+        <div class="text-bubble" *ngFor="let ans of getTextAnswers(q.id)">
+          {{ ans }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-back" (click)="onBack()">返回列表</button>
+  </div>
+</div> -->
+<div class="container" *ngIf="questionnaire">
+  <div class="header-section">
+    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+    <h1>{{ questionnaire.title }}</h1>
+  </div>
+
+  <div class="stats-container">
+    <div class="empty-state" *ngIf="allAnswers.length === 0">
+      <div class="empty-content">
+        <span class="empty-icon">📭</span>
+        <h2>暫無人填寫問卷</h2>
+        <p>目前尚無收集到任何回覆資料，統計圖表將於收到第一筆資料後顯示。</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="allAnswers.length > 0">
+      <div class="stat-item" *ngFor="let q of questionnaire.questions">
+        <h3>{{ q.title }}</h3>
+
+        <div class="chart-box-flex" *ngIf="q.type !== 'text'">
+          <div class="chart-wrapper">
+            <canvas #pieChart></canvas>
+          </div>
+
+          <div class="data-list">
+            <div class="data-row" *ngFor="let opt of q.options; let idx = index">
+              <span class="percent">{{ getPercentage(q, idx) }}</span>
+              <span class="label">{{ opt.content }}</span>
+              <span class="count">{{ calculateVoteCounts(q)[idx] }} 票</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-ans-list" *ngIf="q.type === 'text'">
+          <div class="text-bubble" *ngFor="let ans of getTextAnswers(q.id)">
+            {{ ans }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-back" (click)="onBack()">返回列表</button>
+  </div>
+</div>

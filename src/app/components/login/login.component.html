@@ -1,0 +1,36 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>歡迎</h1>
+      <!-- <p>Sign in to continue</p> -->
+    </div>
+
+    <div class="login-body">
+      <div class="input-group">
+        <input
+          type="email"
+          [(ngModel)]="loginData.email"
+          placeholder="e-mail"
+          name="email">
+      </div>
+
+      <div class="input-group password-group">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="loginData.password"
+          placeholder="密碼(8到12個字)"
+          name="password">
+        <span class="toggle-eye" (click)="togglePassword()">
+          {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+        </span>
+      </div>
+
+      <button class="btn-login" (click)="onLogin()">登錄</button>
+
+      <div class="footer-links">
+
+  <a routerLink="/register" class="create-account-link">沒有賬號?創建賬號</a>
+</div>
+    </div>
+  </div>
+</div>

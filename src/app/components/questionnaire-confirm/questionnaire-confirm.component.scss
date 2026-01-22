@@ -1,0 +1,97 @@
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #fff;
+  font-family: "Microsoft JhengHei", sans-serif;
+
+  .header-section {
+    text-align: center;
+    margin-bottom: 30px;
+
+    .time-range {
+      text-align: right;
+      color: #666;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 20px 0;
+      color: #333;
+    }
+
+    .description-box {
+      text-align: left;
+      border: 1px solid #ddd;
+      padding: 15px;
+      background-color: #fafafa;
+      line-height: 1.6;
+    }
+  }
+
+  // 資訊顯示列
+  .confirm-info-section {
+    .info-row {
+      margin-bottom: 12px;
+      display: flex;
+      font-size: 16px;
+
+      .label {
+        width: 80px;
+        font-weight: bold;
+        color: #555;
+      }
+      .value {
+        color: #000;
+      }
+    }
+  }
+
+  .confirm-questions-section {
+    margin-top: 20px;
+
+    .ans-item {
+      margin-bottom: 25px;
+
+      h3 {
+        font-size: 18px;
+        color: #444;
+        margin-bottom: 8px;
+      }
+
+      .ans-content {
+        padding-left: 15px;
+        color: #0056b3; // 使用藍色區分答案內容
+        font-weight: 500;
+      }
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    margin-top: 50px;
+
+    button {
+      padding: 10px 40px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .btn-modify {
+      background-color: #fff;
+      color: #666;
+      &:hover { background-color: #f0f0f0; }
+    }
+
+    .btn-final {
+      background-color: #fff;
+      border: 2px solid #52c41a; // 綠色邊框符合 PPT [cite: 139]
+      font-weight: bold;
+      &:hover { background-color: #f6ffed; }
+    }
+  }
+}

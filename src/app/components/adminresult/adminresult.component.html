@@ -1,0 +1,143 @@
+<!--
+<div class="results-container" *ngIf="questionnaire">
+  <div class="tab-header">
+    <button [class.active]="activeTab === 'feedback'" (click)="switchTab('feedback')">問卷回覆</button>
+    <button [class.active]="activeTab === 'stat'" (click)="switchTab('stat')">統計結果</button>
+  </div>
+
+  <div class="results-body">
+    <div *ngIf="activeTab === 'feedback' && !isDetailView">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>編號</th>
+            <th>姓名</th>
+            <th>填寫時間</th>
+            <th>觀看回覆</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ans of answers; let i = index">
+            <td>#{{ ans.id || (answers.length - i) }}</td>
+            <td>{{ ans.username }}</td>
+            <td>{{ ans.fillDate | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td><a href="javascript:void(0)" (click)="viewDetail(ans)">前往</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="isDetailView" class="detail-pane">
+      <div class="info-group">
+        <p><strong>姓名：</strong>{{ selectedAnswer?.username }}</p>
+        <p><strong>手機：</strong>{{ selectedAnswer?.phone }}</p>
+        <p><strong>Email：</strong>{{ selectedAnswer?.email }}</p>
+        <p><strong>填寫時間：</strong>{{ selectedAnswer?.fillDate | date:'yyyy-MM-dd HH:mm' }}</p>
+      </div>
+      <hr>
+      <div class="answer-list">
+        <div *ngFor="let q of questionnaire.questions; let i = index" class="q-block">
+          <p class="q-title">{{ i + 1 }}. {{ q.title }}</p>
+          <p class="q-ans">{{ getAnswerVal(q.id) }}</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button (click)="isDetailView = false">返回列表</button>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'stat'" class="stat-pane">
+      <div class="stat-header-info">
+        <p class="date-range">統計區間：{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+        <h2>{{ questionnaire.title }}</h2>
+      </div>
+      <div *ngFor="let q of questionnaire.questions" class="stat-question-card">
+        <h3 class="q-display-title">{{ q.title }}</h3>
+        <div class="stat-visual-box" *ngIf="q.type !== 'text'">
+          <div class="chart-box"><canvas [id]="'chart-' + q.id"></canvas></div>
+          <div class="data-list-box" [id]="'data-list-' + q.id"></div>
+        </div>
+        <div *ngIf="q.type === 'text'" class="text-placeholder">(文字題內容請參考問卷回覆列表)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-exit" (click)="goBack()">返回管理列表</button>
+  </div>
+</div> -->
+<div class="results-container" *ngIf="questionnaire">
+  <div class="tab-header">
+    <button [class.active]="activeTab === 'feedback'" (click)="switchTab('feedback')">問卷回覆</button>
+    <button [class.active]="activeTab === 'stat'" (click)="switchTab('stat')">統計結果</button>
+  </div>
+
+  <div class="results-body">
+    <div class="empty-state" *ngIf="answers.length === 0">
+      <div class="empty-icon">📁</div>
+      <h3>暫無回覆資料</h3>
+      <p>目前尚未有使用者填寫此份問卷，請稍後再回來查看。</p>
+    </div>
+
+    <ng-container *ngIf="answers.length > 0">
+      <div *ngIf="activeTab === 'feedback' && !isDetailView">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>編號</th>
+              <th>姓名</th>
+              <th>填寫時間</th>
+              <th>觀看回覆</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ans of answers; let i = index">
+              <td>#{{ ans.id || (answers.length - i) }}</td>
+              <td>{{ ans.username }}</td>
+              <td>{{ ans.fillDate | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td><a href="javascript:void(0)" (click)="viewDetail(ans)">前往</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="isDetailView" class="detail-pane">
+        <div class="info-group">
+          <p><strong>姓名：</strong>{{ selectedAnswer?.username }}</p>
+          <p><strong>手機：</strong>{{ selectedAnswer?.phone }}</p>
+          <p><strong>Email：</strong>{{ selectedAnswer?.email }}</p>
+          <p><strong>填寫時間：</strong>{{ selectedAnswer?.fillDate | date:'yyyy-MM-dd HH:mm' }}</p>
+        </div>
+        <hr>
+        <div class="answer-list">
+          <div *ngFor="let q of questionnaire.questions; let i = index" class="q-block">
+            <p class="q-title">{{ i + 1 }}. {{ q.title }}</p>
+            <p class="q-ans">{{ getAnswerVal(q.id) }}</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button (click)="isDetailView = false">返回</button>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === 'stat'" class="stat-pane">
+        <div class="stat-header-info">
+          <p class="date-range">統計區間：{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+          <h2>{{ questionnaire.title }}</h2>
+        </div>
+        <div *ngFor="let q of questionnaire.questions" class="stat-question-card">
+          <h3 class="q-display-title">{{ q.title }}</h3>
+          <div class="stat-visual-box" *ngIf="q.type !== 'text'">
+            <div class="chart-box"><canvas [id]="'chart-' + q.id"></canvas></div>
+            <div class="data-list-box" [id]="'data-list-' + q.id"></div>
+          </div>
+          <div *ngIf="q.type === 'text'" class="text-placeholder">(文字題內容請參考問卷回覆列表)</div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="footer">
+    <button class="btn-exit" (click)="goBack()">返回管理列表</button>
+  </div>
+</div>

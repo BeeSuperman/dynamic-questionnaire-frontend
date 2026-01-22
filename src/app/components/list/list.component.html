@@ -1,0 +1,198 @@
+<div class="container">
+  <!-- 包裹所有東西的容器1. -->
+  <div class="search-section">
+    <!-- 問卷名稱和統計時間那一整塊的容器1-1 -->
+    <div class="form-group">
+      <!-- 問卷名稱的容器1-1-1 -->
+      <label>問卷名稱:</label>
+      <input type="text" [(ngModel)]="searchTitle" placeholder="搜尋標題...">
+      <!-- 問卷名稱 的 可以輸入文字的搜尋框-->
+      <!-- 語法格式： -->
+      <!-- <input> 是 HTML 的標籤，意思是「輸入元素」，用來讓使用者輸入資料。
+
+type="text" 表示這個輸入框的類型是「文字」，所以可以打字，而不是日期、密碼、按鈕等 -->
+      <!-- placeholder 是「預留提示文字」 -->
+      <!--
+        雙向數據綁定：輸入框的值與 searchTitle 變數同步，即儲存輸入內容的變數名稱
+        使用者輸入會自動更新 searchTitle，searchTitle 變化也會更新輸入框
+      -->
+    </div>
+
+
+    <div class="form-group">
+      <!-- 統計時間搜尋容器1-1-2-->
+      <label>統計時間:</label>
+
+      <input type="date" [(ngModel)]="searchStartDate">
+      <!-- 行程式碼會在網頁上產生一個 「日期選擇器」，就像你訂機票或填寫生日時，會彈出一個日曆讓你點選日期的輸入框。
+      使用者選定日期後，這個日期會自動同步到程式中一個叫 searchStartDate 的變數。 -->
+<!-- <input> 一樣是輸入元素。
+
+type="date" 表示這個輸入框的類型是「日期」。
+
+在現代瀏覽器中，它通常會顯示成一個有日曆圖示的框，點擊後會彈出視覺化日曆讓你選擇日期。
+
+也可以直接輸入 YYYY-MM-DD 格式的日期（例如：2023-10-05） -->
+<!-- "searchStartDate" 是儲存日期的變數名稱。 -->
+
+
+      <label>~</label>
+      <input type="date" [(ngModel)]="searchEndDate">
+      <!-- 結束日期輸入框：雙向綁定到 searchEndDate 變數 -->
+      <button (click)="onSearch()" class="btn-search">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+          <path
+            d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
+        </svg>
+
+        <span>搜尋</span>
+      </button>
+      <!-- 這行程式碼會在你的網頁上建立一個 「搜尋按鈕」，裡面包含：
+      一個搜尋圖標，搜尋 -->
+       <!--
+        搜尋按鈕：點擊時觸發 onSearch() 方法
+        通常用於執行過濾或向後端發送搜尋請求
+      -->
+    </div>
+  </div>
+
+
+  <hr>
+  <!-- 分隔線 -->
+
+
+  <table class="q-table">
+    <!-- 問卷列表表格 -->
+    <thead>
+      <!-- 這是 「table head」 的縮寫，意思是「表格頭部」。 -->
+      <tr>
+        <!-- 這是 「table row」 的縮寫，意思是「表格的一行」 -->
+        <th>編號</th>
+        <!-- 每個 <th> 代表一欄的標題。 -->
+          <!-- 瀏覽器通常會把 <th> 的文字加粗並置中顯示，讓它與普通的表格單元格 <td> 區分開來。 -->
+        <th>名稱</th>
+        <th>狀態</th>
+        <th>開始時間</th>
+        <th>結束時間</th>
+        <th>結果</th>
+      </tr>
+    </thead>
+
+
+    <tbody>
+      <!-- 表格主體：實際數據 -->
+      <tr *ngFor="let q of displayedQuestionnaires">
+         <!-- *ngFor：Angular 的「循環指令」
+         displayedQuestionnaires：一個問卷資料的陣列 -->
+         <!-- let q：在每次循環中，把當前那筆問卷資料取名為 q -->
+        <!--
+        *ngFor 結構性指令：循環渲染 displayedQuestionnaires 陣列中的每個問卷，所以是
+      因為有 *ngFor，所以tr這個會被複製很多次！<tr> = Table Row（表格行）-->
+
+        <td>#{{ q.id }}</td>
+        <!-- 顯示問卷編號，加上 # 前綴 -->
+        <!-- 問卷名稱欄位 -->
+        <td>
+          <a href="javascript:void(0)" *ngIf="getQuestionnaireStatus(q) === '進行中'" (click)="navToFill(q)">{{ q.title
+            }}</a>
+             <!-- *ngIf：Angular 的條件顯示指令 -->
+            <!--
+            條件渲染：只有狀態為"進行中"的問卷才顯示可點擊連結
+            href="javascript:void(0)" 防止點擊時頁面跳轉
+            (click)="navToFill(q)" 點擊時調用 navToFill 方法並傳入當前問卷
+          -->
+          <!-- 关键:阻止a标签默认跳转  -->
+
+          <span *ngIf="getQuestionnaireStatus(q) !== '進行中'">{{ q.title }}</span>
+        <!--
+            條件渲染：狀態不為"進行中"時顯示普通文字
+            用於顯示已結束或未開始的問卷，不可點擊
+          -->
+
+        </td>
+
+
+        <td>{{ getQuestionnaireStatus(q) }}</td>
+         <!-- 顯示問卷狀態 -->
+
+        <td>{{ q.startTime | date:'yyyy/MM/dd' }}</td>
+        <!--
+          顯示開始時間
+          q.startTime | date:'yyyy/MM/dd' 使用 Angular 日期管道格式化顯示
+          將日期轉換為 "2023/12/01" 格式
+        -->
+
+        <td>{{ q.endTime | date:'yyyy/MM/dd' }}</td>
+         <!-- 顯示結束時間，同樣使用日期管道格式化 -->
+
+        <td>
+           <!-- 結果/統計欄位 -->
+          <!--
+            條件渲染邏輯修改：
+            1. 狀態為"進行中"或"已結束"：顯示藍色可點擊的"前往"連結
+            2. 狀態為"尚未開始"：顯示黑色不可點擊的"前往"文字
+          -->
+          <!-- 情況1：進行中或已結束 - 顯示藍色可點擊連結 -->
+          <a href="javascript:void(0)"
+            *ngIf="getQuestionnaireStatus(q) === '進行中' || getQuestionnaireStatus(q) === '已結束'"
+            (click)="navToStatistic(q)" class="stat-link">前往</a>
+
+          <!-- 情況2：尚未開始 - 顯示黑色普通文字 -->
+          <span *ngIf="getQuestionnaireStatus(q) === '尚未開始'" class="stat-text">前往</span>
+        </td>
+      </tr>
+      <!-- 設置一行的內容，但由於 *ngFor,所以會循環多遍 -->
+    </tbody>
+  </table>
+
+  <!-- ===================== 新增：分頁控制組件（添加到表格下方） ===================== -->
+  <div class="pagination-container" *ngIf="questionnaires.length > 0">
+    <!-- *ngIf="questionnaires.length > 0"：只有當有問卷資料時才顯示分頁 -->
+    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageIndex]="pageIndex"
+      [pageSizeOptions]="pageSizeOptions" [showFirstLastButtons]="true" aria-label="Select page"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+    <!--mat-paginator 這是 Angular Material 的分頁元件 -->
+    <!-- aria-label="Select page"是讓所有人都能使用網站，包括：
+    視障者（使用螢幕閱讀器），只能使用鍵盤操作的人，手部不便者 。若是沒有 aria-label 會怎樣？
+    螢幕閱讀器可能只會說部分-->
+    <!-- 點擊分頁按鈕觸發onPageChange事件，傳入$event參數，在模板中通常用 $event，但在函數參數可以改名，
+    $event 內容：{pageIndex, pageSize, length, previousPageIndex}，這個類型是什麼：
+    “// 正確定義類型
+import { PageEvent } from '@angular/material/paginator';
+
+onPageChange(event: PageEvent) {
+  // 現在 TypeScript 知道 event 有哪些屬性
+  console.log(event.pageIndex);  // OK
+  console.log(event.pageSize);   // OK
+} ”，$ 是 Angular 的約定
+ -->
+
+
+
+
+    <!-- 可選：自定義每頁顯示筆數選擇器 -->
+    <div class="page-size-selector">
+      <mat-form-field appearance="outline">
+
+        <mat-label>每頁顯示</mat-label>
+        <!-- 作用：告訴使用者這個選單是做什麼的 -->
+
+        <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange($event)">
+         <!-- <mat-select>：Material 的下拉選單元件 -->
+
+          <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
+            {{ size }} 筆
+          </mat-option>
+
+        </mat-select>
+      </mat-form-field>
+      <span class="total-info">顯示 {{ displayedQuestionnaires.length }} / {{ totalItems }} 筆資料</span>
+    </div>
+  </div>
+
+  <!-- 沒有數據時的提示 -->
+  <div class="no-data" *ngIf="questionnaires.length === 0">
+    <p>暫無問卷資料</p>
+  </div>
+</div>
