@@ -18,7 +18,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-list',
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss'] ,// 根據截圖，你使用的是 scss
+  styleUrls: ['./list.component.scss'],// 根據截圖，你使用的是 scss
   imports: [CommonModule, FormsModule,
     MatPaginatorModule,  // 新增
     MatSelectModule,     // 新增
@@ -27,12 +27,13 @@ import { Component, OnInit } from '@angular/core';
 
 })
 export class ListComponent implements OnInit {
-// 存放所有問卷的陣列
+  // 存放所有問卷的陣列
   questionnaires: Questionnaire[] = [];
-
+  // [新增] 用來備份所有資料，供搜尋過濾使用 (避免每次搜尋都要重撈或依賴 sessionStorage)
+  allQuestionnaires: Questionnaire[] = [];
 
   displayedQuestionnaires: Questionnaire[] = [];
-   // 存放當前頁顯示的問卷（分頁後數據）- 新增變數
+  // 存放當前頁顯示的問卷（分頁後數據）- 新增變數
   // 分頁相關變數 - 新增這5個變數
   pageSize = 10; // 預設每頁10筆
   pageIndex = 0; // 當前頁索引（從0開始）
@@ -47,7 +48,7 @@ export class ListComponent implements OnInit {
   constructor(
     private qService: QuestionnaireService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadData();
@@ -55,97 +56,110 @@ export class ListComponent implements OnInit {
 
 
 
-  // 從 Service 載入問卷列表 [cite: 47, 49]
+  // 從後端 API 載入問卷列表
   loadData(): void {
-    this.questionnaires = this.qService.getAllQuestionnaires();
-    this.updateDisplayData(); // [修改：添加這行調用分頁更新]
+    // 改用我們剛寫好的 getQuizList()
+    this.qService.getQuizList().subscribe(response => {
+      // response 是後端回傳的 GetQuizRes，它的格式是：
+      // { code: 200, message: "Success", quizList: [...] }
+
+      // 所以我們要拿的是 response.quizList
+      console.log('Raw API Response:', response.quizList);
+      // 僅顯示已發佈的問卷
+      const published = response.quizList.filter((q: any) => {
+        console.log(`Quiz ${q.id} (${q.title}) published:`, q.published, typeof q.published);
+        return !!q.published; // 強制檢查 boolean true (undefined 會變成 false)
+      });
+      this.questionnaires = published;
+      // [新增] 同時備份一份完整的資料到 allQuestionnaires
+      this.allQuestionnaires = published;
+
+      // 拿到資料後，更新畫面分頁
+      this.updateDisplayData();
+    });
   }
 
-  // 搜尋按鈕點擊事件
-  // 注意：我點選的時間區間是要“包含”要搜索的問卷的時間的區間，
-  // 如果我是只想控制開始時間，那結束時間就不要填，然後搜索，
-  // 那樣就可以搜索出來只要問卷開始，不用管結束時間的問卷
+  onSearch(): void {
+    // 搜索標題和日期的功能
+    // [修改] 改用我們自己備份的 allQuestionnaires，不再呼叫 service.getAllQuestionnaires() (因為那是 sessionStorage)
+    const all = this.allQuestionnaires;
 
- onSearch(): void {
-  // 搜索標題和日期的功能
-  const all = this.qService.getAllQuestionnaires();
+    this.questionnaires = all.filter(q => {
+      // 條件1：標題模糊搜尋
+      let matchTitle = true;
 
-  this.questionnaires = all.filter(q => {
-    // 條件1：標題模糊搜尋
-    let matchTitle = true;
+      if (this.searchTitle && this.searchTitle.trim() !== '') {
+        // searchTitle：檢查 searchTitle 變數是否存在（不是 null、undefined 或空值）
+        // this.searchTitle.trim() !== ''：將字串去除前後空白後，檢查是否不是空字串
+        // 只有當搜尋框「有輸入內容」且「不是只有空白字元」時，才執行搜尋邏輯
+        const searchText = this.searchTitle.trim().toLowerCase();
+        const questionTitle = q.title.toLowerCase();
 
-    if (this.searchTitle && this.searchTitle.trim() !== '') {
-      // searchTitle：檢查 searchTitle 變數是否存在（不是 null、undefined 或空值）
-      // this.searchTitle.trim() !== ''：將字串去除前後空白後，檢查是否不是空字串
-      // 只有當搜尋框「有輸入內容」且「不是只有空白字元」時，才執行搜尋邏輯
-      const searchText = this.searchTitle.trim().toLowerCase();
-      const questionTitle = q.title.toLowerCase();
+        // 強化模糊搜尋：支援中文部分匹配
+        // 例如："青春" 可以匹配 "青春洋溢高中生人氣投票戰"
+        matchTitle = questionTitle.includes(searchText);
 
-      // 強化模糊搜尋：支援中文部分匹配
-      // 例如："青春" 可以匹配 "青春洋溢高中生人氣投票戰"
-      matchTitle = questionTitle.includes(searchText);
+        // 如果需要更強的模糊搜尋（非連續字元匹配），可以使用：
+        // matchTitle = this.fuzzySearch(questionTitle, searchText);
+      }
 
-      // 如果需要更強的模糊搜尋（非連續字元匹配），可以使用：
-      // matchTitle = this.fuzzySearch(questionTitle, searchText);
-    }
+      // 條件2：開始/結束時間區間過濾
+      let matchTime = true;
 
-    // 條件2：開始/結束時間區間過濾
-    let matchTime = true;
+      // 開始日期篩選
+      if (this.searchStartDate) {
+        const searchStart = new Date(this.searchStartDate);
+        const qStart = new Date(q.startTime);
 
-    // 開始日期篩選
-    if (this.searchStartDate) {
-      const searchStart = new Date(this.searchStartDate);
-      const qStart = new Date(q.startTime);
+        // 清除時間部分，只比較日期
+        searchStart.setHours(0, 0, 0, 0);
+        qStart.setHours(0, 0, 0, 0);
 
-      // 清除時間部分，只比較日期
-      searchStart.setHours(0, 0, 0, 0);
-      qStart.setHours(0, 0, 0, 0);
+        // 問卷開始時間 >= 搜尋開始時間
+        matchTime = matchTime && qStart.getTime() >= searchStart.getTime();
+      }
 
-      // 問卷開始時間 >= 搜尋開始時間
-      matchTime = matchTime && qStart.getTime() >= searchStart.getTime();
-    }
+      // 結束日期篩選
+      if (this.searchEndDate) {
+        const searchEnd = new Date(this.searchEndDate);
+        const qEnd = new Date(q.endTime);
 
-    // 結束日期篩選
-    if (this.searchEndDate) {
-      const searchEnd = new Date(this.searchEndDate);
-      const qEnd = new Date(q.endTime);
+        // 清除時間部分，只比較日期
+        searchEnd.setHours(23, 59, 59, 999); // 設為當天的最後時刻
+        qEnd.setHours(23, 59, 59, 999);
 
-      // 清除時間部分，只比較日期
-      searchEnd.setHours(23, 59, 59, 999); // 設為當天的最後時刻
-      qEnd.setHours(23, 59, 59, 999);
+        // 問卷結束時間 <= 搜尋結束時間
+        matchTime = matchTime && qEnd.getTime() <= searchEnd.getTime();
+      }
 
-      // 問卷結束時間 <= 搜尋結束時間
-      matchTime = matchTime && qEnd.getTime() <= searchEnd.getTime();
-    }
+      return matchTitle && matchTime;
+    });
 
-    return matchTitle && matchTime;
-  });
+    this.pageIndex = 0;
+    this.updateDisplayData();
+  }
 
-  this.pageIndex = 0;
-  this.updateDisplayData();
-}
+  // 可選：添加模糊搜尋方法（支援中文非連續匹配）
+  private fuzzySearch(text: string, pattern: string): boolean {
+    if (!pattern) return true;
 
-// 可選：添加模糊搜尋方法（支援中文非連續匹配）
-private fuzzySearch(text: string, pattern: string): boolean {
-  if (!pattern) return true;
+    // 將中文拆分成單字進行匹配
+    const textChars = text.split('');
+    const patternChars = pattern.split('');
 
-  // 將中文拆分成單字進行匹配
-  const textChars = text.split('');
-  const patternChars = pattern.split('');
+    let patternIndex = 0;
 
-  let patternIndex = 0;
-
-  for (let i = 0; i < textChars.length; i++) {
-    if (textChars[i] === patternChars[patternIndex]) {
-      patternIndex++;
-      if (patternIndex === patternChars.length) {
-        return true;
+    for (let i = 0; i < textChars.length; i++) {
+      if (textChars[i] === patternChars[patternIndex]) {
+        patternIndex++;
+        if (patternIndex === patternChars.length) {
+          return true;
+        }
       }
     }
-  }
 
-  return false;
-}
+    return false;
+  }
 
   // [新增方法：更新顯示數據（分頁邏輯）]
   updateDisplayData(): void {
@@ -177,11 +191,12 @@ private fuzzySearch(text: string, pattern: string): boolean {
    * 根據時間動態判斷問卷狀態 [cite: 52]
    * @param q 問卷物件
    */
-  getQuestionnaireStatus(q: Questionnaire): '尚未開始' | '進行中' | '已結束' {
+  getQuestionnaireStatus(q: Questionnaire): '尚未開始' | '進行中' | '已結束' | '未發佈' {
     const now = new Date();
     const start = new Date(q.startTime);
     const end = new Date(q.endTime);
 
+    if (!q.published) return '未發佈';
     if (now < start) return '尚未開始';
     if (now > end) return '已結束';
     return '進行中';

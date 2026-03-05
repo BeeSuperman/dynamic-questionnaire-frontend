@@ -26,42 +26,112 @@ export class AdminresultComponent implements OnInit {
     private route: ActivatedRoute,
     private qService: QuestionnaireService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.questionnaire = this.qService.getQuestionnaireById(id);
 
-    const rawData = (this.qService as any).getAllAnswers() || [];
-    const filtered = rawData.filter((a: any) => a.questionnaireId === id);
+    // 1. 獲取問卷定義
+    this.qService.getQuestionnaireById(id).subscribe({
+      next: (res) => {
+        // 相容不同後端回傳格式 (直接物件 or 包在 quiz 裡)
+        const data = res.quiz || res;
+        this.questionnaire = data;
 
-    // 1. 先補齊時間數據
-    const now = new Date();
-    const processedData = filtered.map((ans: any, index: number) => {
-      if (!ans.fillDate) {
-        // 模擬數據：編號越大的時間越新（現在），編號越小的時間越舊
-        const mockTime = new Date(now.getTime() - ((filtered.length - 1 - index) * 5 * 60000));
-        ans.fillDate = mockTime.toISOString();
+        // [新增] 加上資料欄位映射 (questionList -> questions)
+        if (this.questionnaire && !this.questionnaire.questions && (data as any).questionList) {
+          this.questionnaire.questions = (data as any).questionList;
+        }
+
+        // 使用區域變數避免 TS Object possibly undefined 錯誤
+        const quiz = this.questionnaire;
+        if (quiz && quiz.questions) {
+          quiz.questions.forEach((q: any) => {
+            // [新增] 修正 title 欄位 (後端可能叫 question)
+            if (!q.title && q.question) {
+              q.title = q.question;
+            }
+            // [新增] 修正 id 欄位 (後端可能叫 questionId)
+            if (!q.id && q.questionId) {
+              q.id = q.questionId;
+            }
+
+            if (typeof q.options === 'string') {
+              try {
+                let parsed = JSON.parse(q.options);
+                if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+                if (Array.isArray(parsed)) {
+                  q.options = parsed;
+                } else {
+                  throw new Error('Not an array');
+                }
+              } catch (e) {
+                q.options = q.options.split(';').map((val: string, idx: number) => ({ id: idx + 1, content: val }));
+              }
+            }
+            // 確保 type 為小寫
+            if (q.type) q.type = q.type.toLowerCase();
+          });
+        }
+      },
+      error: (err) => {
+        console.error('獲取問卷失敗', err);
+        // this.router.navigate(['/adminlist']); // 暫不強制跳轉，方便除錯
       }
-      return ans;
     });
 
-    // 2. 【核心修正】：執行逆序排序（最新的在最上面）
-    this.answers = processedData.sort((a: any, b: any) => {
-      const timeA = new Date(a.fillDate).getTime();
-      const timeB = new Date(b.fillDate).getTime();
-      return timeB - timeA; // 降序：大時間（新）排在前面
-    });
+    // 2. 獲取填寫回饋與統計
+    this.qService.getFeedback(id).subscribe({
+      next: (res) => {
+        if (res.code === 200 && res.userVoList) {
+          const rawData = res.userVoList;
 
-    if (!this.questionnaire) {
-      this.router.navigate(['/adminlist']);
-    }
+          this.answers = rawData.map((item: any) => {
+            // 時間處理：若後端給的是 LocalDate (yyyy-MM-dd)，轉為 ISO 格式方便排序
+            // 注意：FeedbackUserVo 的欄位是 fiilindate (可能拼寫錯誤，依後端為準)
+            const dateStr = item.fiilindate || item.fillinDate || new Date().toISOString();
+
+            return {
+              name: item.username || item.name,
+              phone: item.phone,
+              email: item.email,
+              age: item.age,
+              fillDate: dateStr,
+              // 轉換 answerVoList -> 前端需要的結構 { questionId, value }
+              answers: item.answerVoList.map((a: any) => ({
+                questionId: a.question.questionId || a.questionId,
+                // 若是多選 (包含分號)，轉為陣列；否則維持字串
+                value: (a.answer && a.answer.includes(';')) ? a.answer.split(';') : a.answer
+              }))
+            };
+          });
+
+          // 3. 排序：最新的在最上面
+          this.answers.sort((a, b) => {
+            const timeA = new Date(a.fillDate).getTime();
+            const timeB = new Date(b.fillDate).getTime();
+            return timeB - timeA;
+          });
+
+          // 4. 重新繪製圖表 (因為資料更新了)
+          setTimeout(() => {
+            if (this.activeTab === 'stat') this.renderCharts();
+          }, 500);
+        }
+      },
+      error: (err) => {
+        console.error('獲取回饋失敗', err);
+      }
+    });
   }
 
   switchTab(tab: 'feedback' | 'stat') {
     this.activeTab = tab;
     this.isDetailView = false;
-    if (tab === 'stat') setTimeout(() => this.renderCharts(), 100);
+    if (tab === 'stat') {
+      // 切換到統計頁籤時，確保圖表有被繪製
+      setTimeout(() => this.renderCharts(), 100);
+    }
   }
 
   viewDetail(ans: any) {
@@ -71,7 +141,8 @@ export class AdminresultComponent implements OnInit {
 
   getAnswerVal(qId: number): string {
     if (!this.selectedAnswer?.answers) return '未填寫';
-    const match = this.selectedAnswer.answers.find((a: any) => a.questionId === qId);
+    // 強制轉型為數字比較，避免 string vs number 問題
+    const match = this.selectedAnswer.answers.find((a: any) => Number(a.questionId) === Number(qId));
     if (!match) return '未填寫';
     return Array.isArray(match.value) ? match.value.join(' ; ') : match.value;
   }

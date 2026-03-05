@@ -3,6 +3,7 @@
 // import { ActivatedRoute, Router } from '@angular/router';
 // import { QuestionnaireService } from '../../services/questionnaire.service';
 // import { Questionnaire, QuestionnaireAnswer } from '../../models/questionnaire.model';
+import { AuthService } from '../../services/auth.service';
 
 // @Component({
 //   selector: 'app-questionnaire-confirm',
@@ -91,12 +92,33 @@ export class QuestionnaireConfirmComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private qService: QuestionnaireService
-  ) {}
+    private qService: QuestionnaireService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.questionnaire = this.qService.getQuestionnaireById(id);
+
+    // [修改] 改為訂閱 Observable 並映射資料
+    this.qService.getQuestionnaireById(id).subscribe(res => {
+      if (res.code === 200) {
+        this.questionnaire = {
+          id: res.id,
+          title: res.title,
+          description: res.description,
+          startTime: new Date(res.startDate),
+          endTime: new Date(res.endDate),
+          questions: res.questionList.map((q: any) => ({
+            id: q.questionId || q.id,
+            title: q.question,
+            type: q.type.toLowerCase(),
+            required: q.required,
+            options: q.options ? q.options.split(';').map((opt: string, idx: number) => ({ id: idx + 1, content: opt })) : []
+          })),
+          status: 'not_started' // 這裡僅用於顯示，狀態計算可選
+        };
+      }
+    });
 
     // 從 Session 讀取填寫內容
     this.userAnswer = this.qService.getTempAnswer();
@@ -156,6 +178,35 @@ export class QuestionnaireConfirmComponent implements OnInit {
   onFinalSubmit() {
     if (!this.userAnswer) return;
 
+    // [新增] 提交前檢查是否為註冊會員
+    this.authService.checkRegistered(this.userAnswer.email).subscribe({
+      next: (res) => {
+        if (res.code === 200) {
+          // 是註冊會員 -> 先顯示提示
+          (Swal as any).fire({
+            title: '提示',
+            text: '郵箱已註冊，個人資料將保持原樣，僅更新問卷答案！請到懸浮按鈕修改會員資料',
+            icon: 'info',
+            confirmButtonColor: '#8b2d2d',
+            confirmButtonText: '了解'
+          }).then(() => {
+            // 用戶點擊了解後，繼續執行原本的提交確認
+            this.showConfirmDialog();
+          });
+        } else {
+          // 是訪客 -> 直接執行原本的提交確認
+          this.showConfirmDialog();
+        }
+      },
+      error: () => {
+        // 檢查失敗也繼續執行 (避免卡住)
+        this.showConfirmDialog();
+      }
+    });
+  }
+
+  // 將原本的確認邏輯抽出來
+  private showConfirmDialog() {
     (Swal as any).fire({
       title: '確認送出問卷？',
       text: '送出後將無法再次修改內容。',
@@ -168,20 +219,34 @@ export class QuestionnaireConfirmComponent implements OnInit {
       width: '400px'
     }).then((result: any) => {
       if (result.isConfirmed) {
-        // 呼叫 Service 正式存檔
-        this.qService.submitFinalAnswer(this.userAnswer!);
+        if (this.questionnaire && this.questionnaire.questions) {
+          this.qService.submitQuestionnaire(this.userAnswer!, this.questionnaire.questions)
+            .subscribe({
+              next: (res) => {
+                if (res.code === 200) {
+                  sessionStorage.removeItem('temp_current_answer');
 
-        // 成功提示：1.5秒後自動關閉並跳轉
-        (Swal as any).fire({
-          title: '送出成功！',
-          text: '感謝您的參與，正在為您跳轉列表...',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-          width: '400px'
-        }).then(() => {
-          this.router.navigate(['/list']);
-        });
+                  // 成功提示：1.5秒後自動關閉並跳轉
+                  (Swal as any).fire({
+                    title: '送出成功！',
+                    text: '感謝您的參與，正在為您跳轉列表...',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    width: '400px'
+                  }).then(() => {
+                    this.router.navigate(['/list']);
+                  });
+                } else {
+                  (Swal as any).fire('送出失敗', res.message, 'error');
+                }
+              },
+              error: (err) => {
+                console.error(err);
+                (Swal as any).fire('連線錯誤', '請稍後再試', 'error');
+              }
+            });
+        }
       }
     });
   }

@@ -4,9 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build dynamic-questionnaire",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy":"ng pages"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +22,7 @@
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
     "chart.js": "^4.5.1",
+    "gh-pages": "^6.3.0",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.26.17",
     "tslib": "^2.3.0",

@@ -180,6 +180,8 @@ import Swal from 'sweetalert2'; // 確保有這行
 })
 export class AdminlistComponent implements OnInit {
   questionnaires: Questionnaire[] = [];
+  // [新增] 備份所有資料供搜尋使用
+  allQuestionnaires: Questionnaire[] = [];
   displayedQuestionnaires: Questionnaire[] = [];
   searchTitle: string = '';
   searchStartDate: string = '';
@@ -192,19 +194,36 @@ export class AdminlistComponent implements OnInit {
   constructor(
     private qService: QuestionnaireService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
   loadData(): void {
-    this.questionnaires = this.qService.getAllQuestionnaires();
-    this.updateDisplayData();
+    // 改用後端 API 取得資料
+    this.qService.getQuizList().subscribe({
+      next: (res) => {
+        // 後端回傳的是 { code, message, quizList: [...] }
+        this.questionnaires = res.quizList;
+        this.allQuestionnaires = res.quizList; // [新增] 備份
+        this.updateDisplayData();
+      },
+      error: (err) => {
+        console.error(err);
+        (Swal as any).fire({
+          title: '讀取失敗',
+          text: '無法取得問卷列表，請確認後端是否已啟動',
+          icon: 'error',
+          confirmButtonColor: '#8b2d2d'
+        });
+      }
+    });
   }
 
   onSearch(): void {
-    const all = this.qService.getAllQuestionnaires();
+    // [修改] 改用 this.allQuestionnaires
+    const all = this.allQuestionnaires;
     this.questionnaires = all.filter(q => {
       const matchTitle = q.title.toLowerCase().includes(this.searchTitle.toLowerCase());
       let matchTime = true;
@@ -308,15 +327,26 @@ export class AdminlistComponent implements OnInit {
       width: '300px'
     }).then((result: any) => {
       if (result.isConfirmed) {
-        this.qService.deleteQuestionnaires(idsToDelete);
-        this.selectedIds.clear();
-        this.loadData();
-
-        (Swal as any).fire({
-          title: '刪除成功',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false
+        // [修改] 改用後端 API 刪除
+        this.qService.deleteQuiz(idsToDelete).subscribe({
+          next: (res) => {
+            if (res.code === 200) {
+              this.selectedIds.clear();
+              this.loadData(); // 重新載入列表
+              (Swal as any).fire({
+                title: '刪除成功',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+              });
+            } else {
+              (Swal as any).fire('刪除失敗', res.message, 'error');
+            }
+          },
+          error: (err) => {
+            console.error(err);
+            (Swal as any).fire('刪除錯誤', '請稍後再試', 'error');
+          }
         });
       }
     });

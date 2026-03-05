@@ -1,6 +1,7 @@
 <div class="container" *ngIf="questionnaire">
   <div class="header-section">
-    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+    <p class="time-range">{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime |
+      date:'yyyy/MM/dd' }}</p>
     <h1>{{ questionnaire.title }}</h1>
     <p class="description">{{ questionnaire.description }}</p>
   </div>
@@ -21,8 +22,8 @@
       <input type="email" [(ngModel)]="userAnswer.email" placeholder="請輸入 Email">
     </div>
     <div class="form-row">
-      <label>年齡 (選填):</label>
-      <input type="number" [(ngModel)]="userAnswer.age" placeholder="請輸入年齡">
+      <label>年齡 (必填):</label>
+      <input type="number" [(ngModel)]="userAnswer.age" placeholder="請輸入年齡 (須大於 18 歲)">
     </div>
   </div>
 
@@ -34,17 +35,15 @@
 
       <div *ngIf="q.type === 'single'">
         <div *ngFor="let opt of q.options" class="option-row">
-          <input type="radio" [name]="'q'+q.id" [value]="opt.content"
-                 [(ngModel)]="userAnswer.answers[i].value">
+          <input type="radio" [name]="'q'+q.id" [value]="opt.content" [(ngModel)]="userAnswer.answers[i].value">
           <label>{{ opt.content }}</label>
         </div>
       </div>
 
       <div *ngIf="q.type === 'multiple'">
         <div *ngFor="let opt of q.options" class="option-row">
-          <input type="checkbox"
-                 [checked]="userAnswer.answers[i].value.includes(opt.content)"
-                 (change)="onCheckboxChange(q.id, opt.content, $event)">
+          <input type="checkbox" [checked]="userAnswer.answers[i].value.includes(opt.content)"
+            (change)="onCheckboxChange(q.id, opt.content, $event)">
           <label>{{ opt.content }}</label>
         </div>
       </div>

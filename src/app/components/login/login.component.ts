@@ -75,13 +75,13 @@ export class LoginComponent {
   loginData = { email: '', password: '' };
   showPassword = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onLogin() {
     const { email, password } = this.loginData;
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    // 1. 基礎卡控：使用美化彈窗
+    // 1. 基礎卡控
     if (!email) { this.showHint('請輸入電子信箱', 'info'); return; }
     if (!password) { this.showHint('請輸入密碼', 'info'); return; }
 
@@ -92,38 +92,37 @@ export class LoginComponent {
       return;
     }
 
-    // 3. 資料庫比對
-    const user = this.authService.checkUser(email, password);
-
-    if (user) {
-      this.authService.loginSuccess(user);
-
-      // 登錄成功彈窗：字體適中，自動跳轉
-      (Swal as any).fire({
-        title: '歡迎回來！',
-        text: `${user.name}，正在為您跳轉界面...`,
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false,
-        width: '400px', // 調小寬度
-        padding: '1.5rem',
-        borderRadius: '15px'
-      }).then(() => {
-        if (email.startsWith('admin')) {
-          this.router.navigate(['/adminlist']);
+    // 3. 呼叫後端登入 API
+    this.authService.login({ email, password }).subscribe({
+      next: (res) => {
+        if (res.code === 200 && res.user) { // 假設後端成功回傳 code 200
+          // 登錄成功彈窗
+          (Swal as any).fire({
+            title: '歡迎回來！',
+            text: `${res.user.name}，正在為您跳轉界面...`,
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+            width: '400px',
+            padding: '1.5rem',
+            borderRadius: '15px'
+          }).then(() => {
+            if (email.startsWith('admin')) {
+              this.router.navigate(['/adminlist']);
+            } else {
+              this.router.navigate(['/list']);
+            }
+          });
         } else {
-          this.router.navigate(['/list']);
+          // 登入失敗 (帳號不存在或密碼錯誤)
+          this.showHint(res.message || '帳號或密碼錯誤', 'error');
         }
-      });
-    } else {
-      // 匹配失敗判定
-      const allUsers = this.authService.getUsers();
-      if (allUsers.some(u => u.email === email)) {
-        this.showHint('密碼錯誤，請重新輸入！', 'error');
-      } else {
-        this.showHint('此帳號尚未註冊，請先創建帳號', 'error');
+      },
+      error: (err) => {
+        console.error(err);
+        this.showHint('伺服器連線失敗，請稍後再試', 'error');
       }
-    }
+    });
   }
 
   /** 通用美化提示框 (小尺寸版) */
@@ -133,7 +132,7 @@ export class LoginComponent {
       text: msg,
       icon: iconType,
       confirmButtonText: '確定',
-      confirmButtonColor: '#8b2d2d', // 配合您的紅棕色按鈕
+      confirmButtonColor: '#8b2d2d',
       width: '400px',
       padding: '1.2rem',
       borderRadius: '12px'

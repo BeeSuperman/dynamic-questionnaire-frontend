@@ -1,0 +1,42 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+   sourceCompatibility = '17'
+   targetCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		//上面這一行可以讓這個專幹一直運行，即運行後的紅燈一直亮著（才可以讓別人一直用），跑完會出現port 端口和多少秒跑完的顯示
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:4.1.0-M1'
+	
+	// mysql connector: mysql 的驅動程式
+	implementation 'com.mysql:mysql-connector-j'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	//資料驗證
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task runPasswordGen(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.example.quiz_1141121.PasswordGen'
+}

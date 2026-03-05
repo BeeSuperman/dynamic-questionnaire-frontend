@@ -135,6 +135,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../services/questionnaire.service';
 import { Questionnaire, QuestionnaireAnswer } from '../../models/questionnaire.model';
+import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -159,30 +160,77 @@ export class QuestionnaireFillComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private qService: QuestionnaireService
-  ) {}
+    private qService: QuestionnaireService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    const data = this.qService.getQuestionnaireById(id);
 
-    if (data) {
-      this.questionnaire = data;
-      this.userAnswer.questionnaireId = data.id;
+    // [修改] 改用新的 getQuestionnaireById (呼叫 /quiz/get API)
+    this.qService.getQuestionnaireById(id).subscribe({
+      next: (res) => {
+        // res 是 GetSingleQuizRes
+        if (res.code === 200) {
+          // 轉換後端資料為前端模型
+          this.questionnaire = {
+            id: res.id,
+            title: res.title,
+            description: res.description,
+            startTime: new Date(res.startDate), // [修正] 模型叫 startTime
+            endTime: new Date(res.endDate),     // [修正] 模型叫 endTime
+            questions: res.questionList.map((q: any) => ({
+              id: q.questionId || q.id,
+              title: q.question, // 後端欄位叫 question
+              // [修正] 後端回傳 "Multi"，轉小寫變成 "multi"，但 HTML 判斷式是 'multiple'
+              type: (q.type.toLowerCase() === 'multi' || q.type.toLowerCase() === 'multiple') ? 'multiple' : q.type.toLowerCase(),
+              required: q.required,
+              options: this.parseOptions(q.options)
+            })),
+            status: 'not_started' // 先給預設值
+          };
 
-      const temp = this.qService.getTempAnswer();
-      if (temp && temp.questionnaireId === id) {
-        this.userAnswer = temp;
-      } else {
-        this.userAnswer.answers = data.questions.map(q => ({
-          questionId: q.id,
-          value: q.type === 'multiple' ? [] : ''
-        }));
+          // [新增] 計算並設置正確的狀態
+          const now = new Date();
+          if (!res.published) {
+            this.questionnaire.status = 'unpublished';
+          } else if (now < this.questionnaire.startTime) {
+            this.questionnaire.status = 'not_started';
+          } else if (now > this.questionnaire.endTime) {
+            this.questionnaire.status = 'finished';
+          } else {
+            this.questionnaire.status = 'in_progress';
+          }
+
+          this.userAnswer.questionnaireId = this.questionnaire.id;
+          this.initUserAnswer(this.questionnaire.questions);
+
+        } else {
+          this.showHint('問卷不存在或無法讀取！', 'error').then(() => {
+            this.router.navigate(['/list']);
+          });
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.showHint('連線失敗！', 'error').then(() => {
+          this.router.navigate(['/list']);
+        });
       }
+    });
+  }
+
+  // 抽出初始化的邏輯，讓代碼乾淨點
+  private initUserAnswer(questions: any[]) {
+    // 檢查是否有暫存
+    const temp = this.qService.getTempAnswer();
+    if (temp && temp.questionnaireId === this.questionnaire?.id) {
+      this.userAnswer = temp;
     } else {
-      this.showHint('問卷不存在！', 'error').then(() => {
-        this.router.navigate(['/list']);
-      });
+      this.userAnswer.answers = questions.map(q => ({
+        questionId: q.id,
+        value: q.type === 'multiple' ? [] : ''
+      }));
     }
   }
 
@@ -214,8 +262,13 @@ export class QuestionnaireFillComponent implements OnInit {
 
   onSubmit() {
     // 1. 基礎校驗
-    if (!this.userAnswer.username || !this.userAnswer.phone || !this.userAnswer.email) {
-      this.showHint('請填寫必填的個人資訊 (姓名、手機、Email)！');
+    if (!this.userAnswer.username || !this.userAnswer.phone || !this.userAnswer.email || !this.userAnswer.age) {
+      this.showHint('請填寫必填的個人資訊 (姓名、手機、Email、年齡)！');
+      return;
+    }
+
+    if (this.userAnswer.age <= 18) {
+      this.showHint('年齡必須大於 18 歲才能填寫問卷！');
       return;
     }
 
@@ -255,5 +308,20 @@ export class QuestionnaireFillComponent implements OnInit {
 
   onCancel() {
     this.router.navigate(['/list']);
+  }
+
+  private parseOptions(optionsStr: string): any[] {
+    if (!optionsStr) return [];
+    try {
+      // 嘗試解析 JSON
+      const parsed = JSON.parse(optionsStr);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (e) {
+      // JSON 解析失敗，走原本的分號邏輯
+    }
+    // 分號分隔
+    return optionsStr.split(';').map((opt: string, idx: number) => ({ id: idx + 1, content: opt }));
   }
 }

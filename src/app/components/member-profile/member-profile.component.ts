@@ -61,7 +61,7 @@ import Swal from 'sweetalert2';
 export class MemberProfileComponent implements OnInit {
   user: any = { name: '', email: '', password: '', phone: '' };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     // 從 Service 抓取當前登入者資訊
@@ -119,24 +119,34 @@ export class MemberProfileComponent implements OnInit {
       return;
     }
 
-    // 2. 更新資料
-    this.authService.updateUserProfile(this.user);
-
-    // 3. 成功提示：自動關閉並跳轉
-    (Swal as any).fire({
-      title: '更新成功！',
-      text: '您的會員資料已成功更新。',
-      icon: 'success',
-      timer: 1500,               // 1.5 秒後自動消失
-      showConfirmButton: false,
-      width: '380px',
-      borderRadius: '12px',
-      customClass: {
-        title: 'swal-small-title',
-        htmlContainer: 'swal-small-text'
+    // 2. 呼叫後端 API 更新資料
+    this.authService.updateUserProfile(this.user).subscribe({
+      next: (res) => {
+        if (res.code === 200) {
+          // 成功提示：自動關閉並跳轉
+          (Swal as any).fire({
+            title: '更新成功！',
+            text: '您的會員資料已成功更新。',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+            width: '380px',
+            borderRadius: '12px',
+            customClass: {
+              title: 'swal-small-title',
+              htmlContainer: 'swal-small-text'
+            }
+          }).then(() => {
+            this.onCancel(); // 返回列表
+          });
+        } else {
+          this.showHint(res.message || '更新失敗', 'error');
+        }
+      },
+      error: (err) => {
+        console.error('更新失敗:', err);
+        this.showHint('更新失敗: ' + err.message, 'error');
       }
-    }).then(() => {
-      this.onCancel(); // 返回列表
     });
   }
 

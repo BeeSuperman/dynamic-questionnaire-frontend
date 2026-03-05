@@ -102,12 +102,12 @@ import Swal from 'sweetalert2';
 export class RegisterComponent {
   userData = { name: '', email: '', password: '', phone: '' };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) { }
 
   onRegister() {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    // 1. 基礎卡控：使用美化彈窗
+    // 1. 基礎卡控
     if (!this.userData.name || !this.userData.email || !this.userData.password) {
       this.showHint('請填寫完整資訊！', 'info');
       return;
@@ -121,31 +121,36 @@ export class RegisterComponent {
       return;
     }
 
-    // 2. 檢查重複註冊
-    const users = this.authService.getUsers();
-    if (users.some(u => u.email === this.userData.email)) {
-      this.showHint('此信箱已被註冊！', 'error');
-      return;
-    }
-
-    // 3. 註冊成功處理
-    this.authService.register(this.userData);
-
-    (Swal as any).fire({
-      title: '註冊成功！',
-      text: '請使用新帳號重新登入系統。',
-      icon: 'success',
-      confirmButtonText: '前往登入',
-      confirmButtonColor: '#8b2d2d', // 配合您的紅棕色按鈕主題
-      width: '380px',               // 縮小寬度
-      padding: '1.2rem',
-      borderRadius: '12px',
-      customClass: {
-        title: 'swal-small-title',
-        htmlContainer: 'swal-small-text'
+    // 2. 呼叫後端註冊 API (取代原本的 getUsers check)
+    this.authService.register(this.userData).subscribe({
+      next: (res) => {
+        if (res.code === 200) {
+          // 3. 註冊成功處理
+          (Swal as any).fire({
+            title: '註冊成功！',
+            text: '請使用新帳號重新登入系統。',
+            icon: 'success',
+            confirmButtonText: '前往登入',
+            confirmButtonColor: '#8b2d2d',
+            width: '380px',
+            padding: '1.2rem',
+            borderRadius: '12px',
+            customClass: {
+              title: 'swal-small-title',
+              htmlContainer: 'swal-small-text'
+            }
+          }).then(() => {
+            this.router.navigate(['/login']);
+          });
+        } else {
+          // 註冊失敗 (例如 email 重複)
+          this.showHint(res.message || '註冊失敗', 'error');
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.showHint('註冊失敗，請稍後再試', 'error');
       }
-    }).then(() => {
-      this.router.navigate(['/login']);
     });
   }
 

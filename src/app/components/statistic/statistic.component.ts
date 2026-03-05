@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionnaireService } from '../../services/questionnaire.service';
 import { Questionnaire, QuestionnaireAnswer, Question } from '../../models/questionnaire.model';
 import { Chart, registerables } from 'chart.js';
+import Swal from 'sweetalert2';
 
 // 註冊 Chart.js 組件
 Chart.register(...registerables);
@@ -27,64 +28,130 @@ export class StatisticComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private qService: QuestionnaireService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    // 1. 取得網址參數中的問卷 ID [cite: 71]
     const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    // 2. 【核心功能】：獲取 URL 中的查詢參數 from，用來判斷是從前台還是後台點進來的
     this.source = this.route.snapshot.queryParamMap.get('from');
 
-    // 3. 根據 ID 載入問卷定義 [cite: 71]
-    const data = this.qService.getQuestionnaireById(id);
+    // 1. [修改] 改為呼叫 API 獲取問卷定義
+    this.qService.getQuestionnaireById(id).subscribe({
+      next: (res) => {
+        if (res.code === 200) {
+          this.questionnaire = {
+            id: res.id,
+            title: res.title,
+            description: res.description,
+            startTime: new Date(res.startDate),
+            endTime: new Date(res.endDate),
+            status: 'unpublished', // 預設值，稍後計算
+            questions: res.questionList.map((q: any) => ({
+              id: q.questionId || q.id,
+              title: q.question,
+              type: q.type.toLowerCase(),
+              required: q.required,
+              options: this.parseOptions(q.options)
+            }))
+          };
 
-    if (data) {
-      this.questionnaire = data;
-      // 獲取所有填答紀錄並過濾屬於此問卷的答案 [cite: 141, 163]
-      const answersData = (this.qService as any).getAllAnswers();
-      this.allAnswers = answersData.filter((a: any) => a.questionnaireId === id);
-    } else {
-      // 若找不到問卷資料，導回前台列表
-      this.router.navigate(['/list']);
-    }
+          const now = new Date();
+          if (!res.published) {
+            this.questionnaire.status = 'unpublished';
+          } else if (now < this.questionnaire.startTime!) {
+            this.questionnaire.status = 'not_started';
+          } else if (now > this.questionnaire.endTime!) {
+            this.questionnaire.status = 'finished';
+          } else {
+            this.questionnaire.status = 'in_progress';
+          }
+
+          // 2. [新增] 成功後，再獲取填寫回饋
+          this.fetchFeedback(id);
+        } else {
+          this.showError('找不到該問卷！');
+          this.router.navigate(['/list']);
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.showError('無法載入問卷資料');
+        this.router.navigate(['/list']);
+      }
+    });
+  }
+
+  // [新增] 獲取統計回饋數據
+  fetchFeedback(id: number) {
+    this.qService.getFeedback(id).subscribe({
+      next: (res) => {
+        if (res.code === 200 && res.userVoList) {
+          this.allAnswers = res.userVoList.map((vo: any) => ({
+            questionnaireId: id,
+            username: vo.username,
+            phone: vo.phone,
+            email: vo.email,
+            age: vo.age,
+            answers: vo.answerVoList.map((ansVo: any) => ({
+              questionId: ansVo.question.questionId,
+              value: ansVo.answer.includes(';') ? ansVo.answer.split(';') : ansVo.answer
+            }))
+          }));
+
+          // 4. 資料準備好後渲染圖表
+          // 避免重複呼叫，這裡不需要 setTimeout，因為 ngAfterViewInit 會處理初始渲染
+          // 或者如果是動態加載數據，這裡呼叫是必要的，但要確保 destroy
+          setTimeout(() => this.renderCharts(), 100);
+        }
+      },
+      error: (err) => {
+        console.error('Feedback API Error:', err);
+      }
+    });
+
+  }
+
+  private showError(msg: string) {
+    (Swal as any).fire({
+      title: '錯誤',
+      text: msg,
+      icon: 'error',
+      confirmButtonColor: '#8b2d2d'
+    });
   }
 
   ngAfterViewInit(): void {
-    // 視圖初始化完成後延遲渲染，確保 DOM 完全準備好才繪製圖表
-    setTimeout(() => this.renderCharts(), 100);
+    // 移除這裡的呼叫，統一由 fetchFeedback 數據回來後觸發，或者保留但加強防護
+    // 因為數據是異步的，ngAfterViewInit 時數據可能還沒到
+    // 只要確保 renderCharts 內部有防護即可
   }
 
-  /**
-   * 核心功能：返回按鈕邏輯。
-   * 會根據 source 變數判斷應該回後台還是前台。
-   */
   onBack() {
-    // 如果來源標記是 'admin'，則返回後台管理列表頁
     if (this.source === 'admin') {
       this.router.navigate(['/adminlist']);
     } else {
-      // 否則預設返回前台問卷列表頁
       this.router.navigate(['/list']);
     }
   }
 
-  /**
-   * 繪製圓餅圖：遍歷所有非文字題並渲染
-   */
+  // 管理圖表實例以確保銷毀
+  private charts: Chart[] = [];
+
   renderCharts() {
     if (!this.questionnaire) return;
 
-    // 過濾出非文字類型的題目來匹配畫布 [cite: 142, 402]
+    // 先銷毀舊圖表
+    this.charts.forEach(chart => chart.destroy());
+    this.charts = [];
+
     const nonTextQuestions = this.questionnaire.questions.filter(q => q.type !== 'text');
 
     this.chartCanvases.forEach((canvas, index) => {
       const q = nonTextQuestions[index];
       const labels = q.options?.map(opt => opt.content) || [];
-      const counts = this.calculateVoteCounts(q); // 統計各選項的真實票數
+      const counts = this.calculateVoteCounts(q);
 
-      new Chart(canvas.nativeElement, {
-        type: 'pie', // 指定為圓餅圖 [cite: 304]
+      const newChart = new Chart(canvas.nativeElement, {
+        type: 'pie',
         data: {
           labels: labels,
           datasets: [{
@@ -96,31 +163,25 @@ export class StatisticComponent implements OnInit, AfterViewInit {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: false } // 隱藏預設圖例，改用 HTML 自定義列表顯示 [cite: 152]
+            legend: { display: false }
           }
         }
       });
+      this.charts.push(newChart);
     });
   }
 
-  /**
-   * 統計算法：計算單個問題中各個選項的實際得票數
-   */
   calculateVoteCounts(question: Question): number[] {
-    // 初始化每個選項的計數為 0
     const counts = (question.options || []).map(() => 0);
 
     this.allAnswers.forEach(ans => {
-      // 找到使用者對該題目的回答
       const match = ans.answers.find(a => a.questionId === question.id);
       if (match) {
         const val = match.value;
         question.options?.forEach((opt, idx) => {
           if (Array.isArray(val)) {
-            // 多選題邏輯：檢查陣列是否包含該選項 [cite: 150]
             if (val.includes(opt.content)) counts[idx]++;
           } else {
-            // 單選題邏輯：直接比對字串 [cite: 149]
             if (val === opt.content) counts[idx]++;
           }
         });
@@ -129,20 +190,13 @@ export class StatisticComponent implements OnInit, AfterViewInit {
     return counts;
   }
 
-  /**
-   * 計算並格式化百分比字串
-   */
   getPercentage(q: Question, optionIdx: number): string {
     const counts = this.calculateVoteCounts(q);
     const total = counts.reduce((a, b) => a + b, 0);
     if (total === 0) return '0%';
-    // 計算比例並顯示百分比 [cite: 315, 318]
     return Math.round((counts[optionIdx] / total) * 100) + '%';
   }
 
-  /**
-   * 獲取簡答題的所有文字答案 [cite: 151]
-   */
   getTextAnswers(questionId: number): string[] {
     const answers: string[] = [];
     this.allAnswers.forEach(ans => {
@@ -151,7 +205,23 @@ export class StatisticComponent implements OnInit, AfterViewInit {
         answers.push(match.value);
       }
     });
-    // 若無真實填答，顯示提示訊息
     return answers.length > 0 ? answers : ["目前無作答內容"];
   }
+
+  // [新增] 解析選項 (兼容 JSON 與分號分隔)
+  private parseOptions(optionsStr: string): any[] {
+    if (!optionsStr) return [];
+    try {
+      let parsed = JSON.parse(optionsStr);
+      // 處理重複編碼的情況 "[\"... \"]"
+      if (typeof parsed === 'string') {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch (e) { }
+      }
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) { }
+    return optionsStr.split(';').map((opt: string, idx: number) => ({ id: idx + 1, content: opt }));
+  }
 }
+

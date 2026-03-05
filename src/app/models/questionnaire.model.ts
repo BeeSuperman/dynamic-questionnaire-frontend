@@ -71,6 +71,8 @@ export interface Questionnaire {
   startTime: Date;
   /** 問卷截止填寫的時間 */
   endTime: Date;
+  /** 是否已發佈 */
+  published?: boolean;
 
   /** 包含的所有問題列表，順序由陣列索引決定 */
   questions: Question[];

@@ -20,7 +20,7 @@
           <tr *ngFor="let ans of answers; let i = index">
             <td>#{{ ans.id || (answers.length - i) }}</td>
             <td>{{ ans.username }}</td>
-            <td>{{ ans.fillDate | date:'yyyy-MM-dd HH:mm' }}</td>
+            <td>{{ ans.fillDate | date:'yyyy-MM-dd HH:mm:ss' }}</td>
             <td><a href="javascript:void(0)" (click)="viewDetail(ans)">前往</a></td>
           </tr>
         </tbody>
@@ -32,7 +32,7 @@
         <p><strong>姓名：</strong>{{ selectedAnswer?.username }}</p>
         <p><strong>手機：</strong>{{ selectedAnswer?.phone }}</p>
         <p><strong>Email：</strong>{{ selectedAnswer?.email }}</p>
-        <p><strong>填寫時間：</strong>{{ selectedAnswer?.fillDate | date:'yyyy-MM-dd HH:mm' }}</p>
+        <p><strong>填寫時間：</strong>{{ selectedAnswer?.fillDate | date:'yyyy-MM-dd HH:mm:ss' }}</p>
       </div>
       <hr>
       <div class="answer-list">
@@ -93,7 +93,7 @@
           <tbody>
             <tr *ngFor="let ans of answers; let i = index">
               <td>#{{ ans.id || (answers.length - i) }}</td>
-              <td>{{ ans.username }}</td>
+              <td>{{ ans.name }}</td>
               <td>{{ ans.fillDate | date:'yyyy-MM-dd HH:mm' }}</td>
               <td><a href="javascript:void(0)" (click)="viewDetail(ans)">前往</a></td>
             </tr>
@@ -103,7 +103,7 @@
 
       <div *ngIf="isDetailView" class="detail-pane">
         <div class="info-group">
-          <p><strong>姓名：</strong>{{ selectedAnswer?.username }}</p>
+          <p><strong>姓名：</strong>{{ selectedAnswer?.name }}</p>
           <p><strong>手機：</strong>{{ selectedAnswer?.phone }}</p>
           <p><strong>Email：</strong>{{ selectedAnswer?.email }}</p>
           <p><strong>填寫時間：</strong>{{ selectedAnswer?.fillDate | date:'yyyy-MM-dd HH:mm' }}</p>
@@ -122,7 +122,8 @@
 
       <div *ngIf="activeTab === 'stat'" class="stat-pane">
         <div class="stat-header-info">
-          <p class="date-range">統計區間：{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime | date:'yyyy/MM/dd' }}</p>
+          <p class="date-range">統計區間：{{ questionnaire.startTime | date:'yyyy/MM/dd' }} - {{ questionnaire.endTime |
+            date:'yyyy/MM/dd' }}</p>
           <h2>{{ questionnaire.title }}</h2>
         </div>
         <div *ngFor="let q of questionnaire.questions" class="stat-question-card">

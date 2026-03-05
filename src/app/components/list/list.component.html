@@ -26,14 +26,14 @@ type="text" 表示這個輸入框的類型是「文字」，所以可以打字�
       <input type="date" [(ngModel)]="searchStartDate">
       <!-- 行程式碼會在網頁上產生一個 「日期選擇器」，就像你訂機票或填寫生日時，會彈出一個日曆讓你點選日期的輸入框。
       使用者選定日期後，這個日期會自動同步到程式中一個叫 searchStartDate 的變數。 -->
-<!-- <input> 一樣是輸入元素。
+      <!-- <input> 一樣是輸入元素。
 
 type="date" 表示這個輸入框的類型是「日期」。
 
 在現代瀏覽器中，它通常會顯示成一個有日曆圖示的框，點擊後會彈出視覺化日曆讓你選擇日期。
 
 也可以直接輸入 YYYY-MM-DD 格式的日期（例如：2023-10-05） -->
-<!-- "searchStartDate" 是儲存日期的變數名稱。 -->
+      <!-- "searchStartDate" 是儲存日期的變數名稱。 -->
 
 
       <label>~</label>
@@ -49,7 +49,7 @@ type="date" 表示這個輸入框的類型是「日期」。
       </button>
       <!-- 這行程式碼會在你的網頁上建立一個 「搜尋按鈕」，裡面包含：
       一個搜尋圖標，搜尋 -->
-       <!--
+      <!--
         搜尋按鈕：點擊時觸發 onSearch() 方法
         通常用於執行過濾或向後端發送搜尋請求
       -->
@@ -69,7 +69,7 @@ type="date" 表示這個輸入框的類型是「日期」。
         <!-- 這是 「table row」 的縮寫，意思是「表格的一行」 -->
         <th>編號</th>
         <!-- 每個 <th> 代表一欄的標題。 -->
-          <!-- 瀏覽器通常會把 <th> 的文字加粗並置中顯示，讓它與普通的表格單元格 <td> 區分開來。 -->
+        <!-- 瀏覽器通常會把 <th> 的文字加粗並置中顯示，讓它與普通的表格單元格 <td> 區分開來。 -->
         <th>名稱</th>
         <th>狀態</th>
         <th>開始時間</th>
@@ -82,9 +82,9 @@ type="date" 表示這個輸入框的類型是「日期」。
     <tbody>
       <!-- 表格主體：實際數據 -->
       <tr *ngFor="let q of displayedQuestionnaires">
-         <!-- *ngFor：Angular 的「循環指令」
+        <!-- *ngFor：Angular 的「循環指令」
          displayedQuestionnaires：一個問卷資料的陣列 -->
-         <!-- let q：在每次循環中，把當前那筆問卷資料取名為 q -->
+        <!-- let q：在每次循環中，把當前那筆問卷資料取名為 q -->
         <!--
         *ngFor 結構性指令：循環渲染 displayedQuestionnaires 陣列中的每個問卷，所以是
       因為有 *ngFor，所以tr這個會被複製很多次！<tr> = Table Row（表格行）-->
@@ -95,8 +95,8 @@ type="date" 表示這個輸入框的類型是「日期」。
         <td>
           <a href="javascript:void(0)" *ngIf="getQuestionnaireStatus(q) === '進行中'" (click)="navToFill(q)">{{ q.title
             }}</a>
-             <!-- *ngIf：Angular 的條件顯示指令 -->
-            <!--
+          <!-- *ngIf：Angular 的條件顯示指令 -->
+          <!--
             條件渲染：只有狀態為"進行中"的問卷才顯示可點擊連結
             href="javascript:void(0)" 防止點擊時頁面跳轉
             (click)="navToFill(q)" 點擊時調用 navToFill 方法並傳入當前問卷
@@ -104,7 +104,7 @@ type="date" 表示這個輸入框的類型是「日期」。
           <!-- 关键:阻止a标签默认跳转  -->
 
           <span *ngIf="getQuestionnaireStatus(q) !== '進行中'">{{ q.title }}</span>
-        <!--
+          <!--
             條件渲染：狀態不為"進行中"時顯示普通文字
             用於顯示已結束或未開始的問卷，不可點擊
           -->
@@ -113,7 +113,7 @@ type="date" 表示這個輸入框的類型是「日期」。
 
 
         <td>{{ getQuestionnaireStatus(q) }}</td>
-         <!-- 顯示問卷狀態 -->
+        <!-- 顯示問卷狀態 -->
 
         <td>{{ q.startTime | date:'yyyy/MM/dd' }}</td>
         <!--
@@ -123,10 +123,10 @@ type="date" 表示這個輸入框的類型是「日期」。
         -->
 
         <td>{{ q.endTime | date:'yyyy/MM/dd' }}</td>
-         <!-- 顯示結束時間，同樣使用日期管道格式化 -->
+        <!-- 顯示結束時間，同樣使用日期管道格式化 -->
 
         <td>
-           <!-- 結果/統計欄位 -->
+          <!-- 結果/統計欄位 -->
           <!--
             條件渲染邏輯修改：
             1. 狀態為"進行中"或"已結束"：顯示藍色可點擊的"前往"連結
@@ -179,7 +179,7 @@ onPageChange(event: PageEvent) {
         <!-- 作用：告訴使用者這個選單是做什麼的 -->
 
         <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange($event)">
-         <!-- <mat-select>：Material 的下拉選單元件 -->
+          <!-- <mat-select>：Material 的下拉選單元件 -->
 
           <mat-option *ngFor="let size of pageSizeOptions" [value]="size">
             {{ size }} 筆
