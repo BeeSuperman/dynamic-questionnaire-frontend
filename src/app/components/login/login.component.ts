@@ -140,4 +140,28 @@ export class LoginComponent {
   }
 
   togglePassword() { this.showPassword = !this.showPassword; }
+
+  /**
+   * [DEMO] 一鍵體驗，直接注入 Mock 資料
+   * 完全不需要後端，首頁按鈕即廳體驗
+   */
+  quickDemo(role: 'admin' | 'user') {
+    this.authService.mockLogin(role).subscribe(() => {
+      const name = role === 'admin' ? '管理員' : '測試使用者';
+      (Swal as any).fire({
+        title: `🎉 歡迎體驗！`,
+        html: `正在以《${name}》身分進入系統...`,
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        width: '400px'
+      }).then(() => {
+        if (role === 'admin') {
+          this.router.navigate(['/adminlist']);
+        } else {
+          this.router.navigate(['/list']);
+        }
+      });
+    });
+  }
 }

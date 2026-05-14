@@ -2,8 +2,33 @@
   <div class="login-card">
     <div class="login-header">
       <h1>歡迎</h1>
-      <!-- <p>Sign in to continue</p> -->
     </div>
+
+    <!-- ✨ DEMO 體驗區塊：面試官一鍵進入系統 -->
+    <div class="demo-section">
+      <div class="demo-label">
+        <span class="demo-badge">✨ DEMO</span>
+        <span class="demo-desc">無需帳號，一鍵立即體驗</span>
+      </div>
+      <div class="demo-buttons">
+        <button class="btn-demo btn-demo-admin" (click)="quickDemo('admin')">
+          <span class="demo-icon">👑</span>
+          <span class="demo-btn-text">
+            <strong>管理員體驗</strong>
+            <small>問卷管理 / 設計 / 統計</small>
+          </span>
+        </button>
+        <button class="btn-demo btn-demo-user" (click)="quickDemo('user')">
+          <span class="demo-icon">📋</span>
+          <span class="demo-btn-text">
+            <strong>使用者體驗</strong>
+            <small>瀏覽問卷 / 填寫 / 提交</small>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"><span>或使用帳號登入</span></div>
 
     <div class="login-body">
       <div class="input-group">
@@ -28,9 +53,8 @@
       <button class="btn-login" (click)="onLogin()">登錄</button>
 
       <div class="footer-links">
-
-  <a routerLink="/register" class="create-account-link">沒有賬號?創建賬號</a>
-</div>
+        <a routerLink="/register" class="create-account-link">沒有賬號？創建賬號</a>
+      </div>
     </div>
   </div>
 </div>

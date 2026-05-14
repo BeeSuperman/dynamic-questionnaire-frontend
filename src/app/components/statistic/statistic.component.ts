@@ -208,8 +208,10 @@ export class StatisticComponent implements OnInit, AfterViewInit {
     return answers.length > 0 ? answers : ["目前無作答內容"];
   }
 
-  // [新增] 解析選項 (兼容 JSON 與分號分隔)
-  private parseOptions(optionsStr: string): any[] {
+  // [新增] 解析選項 (兼容 JSON、分號分隔 和 直接陣列)
+  private parseOptions(optionsStr: any): any[] {
+    // Mock 資料直接傳陣列，不需要解析，直接回傳
+    if (Array.isArray(optionsStr)) return optionsStr;
     if (!optionsStr) return [];
     try {
       let parsed = JSON.parse(optionsStr);

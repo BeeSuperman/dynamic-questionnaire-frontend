@@ -1,7 +1,7 @@
 
 //---新增前兩個
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs'; // 用於處理非同步回應
+import { Observable, of } from 'rxjs'; // 用於處理非同步回應
 import { map } from 'rxjs/operators'; // [新增] 用於資料轉換
 import { Injectable } from '@angular/core';
 import { Questionnaire, QuestionnaireAnswer } from '../models/questionnaire.model';
@@ -85,13 +85,65 @@ export class QuestionnaireService {
   constructor(private http: HttpClient) {
     // [刪除] 不需要再塞假資料了，因為我們要直接看資料庫
   }
+
+  // =========================================================
+  // [DEMO MODE] 判斷是否為一鍵體驗模式 (由 auth.service mockLogin 設定)
+  // =========================================================
+  private isMockMode(): boolean {
+    return sessionStorage.getItem('mock_mode') === 'true';
+  }
+
+  // Mock 問卷資料 (與原有 initMockData 相同，供 Demo 模式使用)
+  private getMockQuizList(): any[] {
+    const now = new Date();
+    const future = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // 90天後
+    const past = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);   // 30天前
+    return [
+      {
+        quizId: 1, id: 1, title: '青春洋溢高中生人氣投票戰',
+        description: '歡迎參加年度人氣投票！請選出您心目中最支持的參賽者。',
+        published: true, startDate: past.toISOString(), endDate: future.toISOString(),
+        startTime: past, endTime: future, status: 'in_progress',
+        questionList: [
+          { questionId: 1, id: 1, question: '【單選】請選出您最支持的人氣選手', title: '【單選】請選出您最支持的人氣選手', type: 'single', required: true, options: [
+            { id: 1, content: '何廢料 (建國中學)' }, { id: 2, content: '+7/77 (金女中)' },
+            { id: 3, content: '林小明 (台中一中)' }, { id: 4, content: '陳大華 (高雄中學)' }
+          ]},
+          { questionId: 2, id: 2, question: '【可多選】您支持該選手的原因', title: '【可多選】您支持該選手的原因', type: 'multiple', required: true, options: [
+            { id: 1, content: '才華洋溢' }, { id: 2, content: '外型出眾' },
+            { id: 3, content: '性格親民' }, { id: 4, content: '學習成績優異' }
+          ]},
+          { questionId: 3, id: 3, question: '【文字】請寫下您對支持選手的一句加油話語', title: '【文字】請寫下對選手的加油話', type: 'text', required: false, options: [] }
+        ]
+      },
+      {
+        quizId: 2, id: 2, title: '美食大賽人氣票選',
+        description: '請選出你心中最愛的食物！',
+        published: true, startDate: past.toISOString(), endDate: future.toISOString(),
+        startTime: past, endTime: future, status: 'in_progress',
+        questionList: [
+          { questionId: 1, id: 1, question: '請選取最喜歡的食物', title: '請選取最喜歡的食物', type: 'single', required: true, options: [
+            { id: 1, content: '螺螄粉' }, { id: 2, content: '鹽酥雞' }, { id: 3, content: '珍珠奶茶' }
+          ]}
+        ]
+      },
+      {
+        quizId: 3, id: 3, title: 'E312購買傾向市調',
+        description: '市場調查問卷，了解消費者購買意願。',
+        published: false, startDate: future.toISOString(), endDate: future.toISOString(),
+        startTime: future, endTime: future, status: 'unpublished',
+        questionList: []
+      }
+    ];
+  }
+
   //----------------------串接第三步：在service裡開始寫各種呼叫後端api方法的方法
 
   // [新增] 這是呼叫後端新增問卷的方法
-  // 修改這裡：網址改成後端的正確路徑，其中
-  // post,req: QuestionnaireParam是要傳到controller的參數。後端參數是：@RequestBody CreateReq req.req是前端給的名字：後面是對應的類型。類型要在前端定義哦
   public createQuiz(req: CreateQuestionnaireParam): Observable<any> {
-    // 2. 使用 API_URL 常數，網址變成 http://localhost:8080/quiz/create
+    if (this.isMockMode()) {
+      return of({ code: 200, message: 'Success (Demo模式)', quizId: Date.now() });
+    }
     return this.http.post<any>(`${this.API_URL}/quiz/create`, req);
   }
   // 後端 Controller 是 @RequestMapping("/api/quiz") + @PostMapping("quiz/create")
@@ -100,6 +152,9 @@ export class QuestionnaireService {
 
   //獲得所有問卷列表的方法，get,無參
   public getQuizList(): Observable<any> {
+    if (this.isMockMode()) {
+      return of({ code: 200, message: 'Success', quizList: this.getMockQuizList() });
+    }
     return this.http.get<any>(`${this.API_URL}/quiz/getAll`).pipe(
       map(response => {
         if (response.code === 200 && response.quizList) {
@@ -129,11 +184,18 @@ export class QuestionnaireService {
   }
   //獲取某張問卷的所有問題，get，參數是@RequestParam("quizId") int quizId
   public getQuestionList(quizId: number): Observable<any> {
+    if (this.isMockMode()) {
+      const quiz = this.getMockQuizList().find(q => q.id === quizId);
+      return of({ code: 200, questionList: quiz?.questionList || [] });
+    }
     return this.http.get<any>(`${this.API_URL}/quiz/get_QuestionList?quizId=${quizId}`);
 
   }
   //更新問卷，post，(@RequestBody UpdateReq req) {
   public updateQuiz(updateReq: UpdateQuestionnaireParam): Observable<any> {
+    if (this.isMockMode()) {
+      return of({ code: 200, message: 'Success (Demo模式)' });
+    }
     return this.http.post<any>(`${this.API_URL}/quiz/update`, updateReq);
 
   }
@@ -142,16 +204,10 @@ export class QuestionnaireService {
   // 參數 ids--只是個名字: 我們想刪除的問卷 ID 陣列 (例如：[1, 2, 3])value是類型
   //這樣寫完之後，你在外面使用的時候就會非常簡單： service.deleteQuiz([1, 2, 3]) (給我刪掉 1, 2, 3 號)，就這麼簡單！
   public deleteQuiz(ids: number[]): Observable<any> {
-
-    // 1. 準備便當盒 (包裝資料)
-    // 後端規定要收到一個物件，裡面有個屬性叫 "quizIdList"，這個屬性名和後端對應上的
-    const body = {
-      quizIdList: ids  // 把我們傳進來的 ids 放進去
-    };
-    // 2. 寄出請求
-    // 網址：http://localhost:8080/quiz/delete
-    // 方法：POST
-    //的內容：body (也就是那個包好的物件)
+    if (this.isMockMode()) {
+      return of({ code: 200, message: 'Success (Demo模式)' });
+    }
+    const body = { quizIdList: ids };
     return this.http.post<any>(`${this.API_URL}/quiz/delete`, body);
   }
 
@@ -167,6 +223,37 @@ export class QuestionnaireService {
 
   /** [修改] 根據 ID 獲取單份問卷 (呼叫後端 API) */
   getQuestionnaireById(id: number): Observable<any> {
+    if (this.isMockMode()) {
+      const raw = this.getMockQuizList().find(q => q.id === id);
+      if (raw) {
+        // 精確對齊 questionnaire-fill 和 statistic 元件期望的欄位格式
+        return of({
+          code: 200,
+          id: raw.id,
+          quizId: raw.id,
+          title: raw.title,
+          description: raw.description,
+          published: raw.published,
+          startDate: raw.startDate,
+          endDate: raw.endDate,
+          startTime: raw.startTime,
+          endTime: raw.endTime,
+          status: raw.status,
+          // questionnaire-fill 期望 questionList，每題有 questionId / question / type / required / options
+          questionList: raw.questionList.map((q: any) => ({
+            questionId: q.questionId || q.id,
+            id: q.questionId || q.id,
+            question: q.title || q.question,  // 欄位名對齊
+            title: q.title || q.question,
+            type: q.type,  // 保留原始大小寫，元件自行處理
+            required: q.required,
+            options: q.options  // 直接傳陣列，parseOptions 會處理
+          })),
+          quiz: raw  // admindesign 也會用到
+        });
+      }
+      return of({ code: 404, message: '找不到問卷' });
+    }
     return this.http.get<any>(`${this.API_URL}/quiz/get?quizId=${id}`).pipe(
       map(response => {
         if (response.code === 200 && response.quiz) {
@@ -189,7 +276,7 @@ export class QuestionnaireService {
             status: status
           };
         }
-        return response; // 或 null/error handling
+        return response;
       })
     );
   }
@@ -274,6 +361,9 @@ export class QuestionnaireService {
         };
       })
     };
+    if (this.isMockMode()) {
+      return of({ code: 200, message: '提交成功 (Demo模式)' });
+    }
     return this.http.post<any>(`${this.API_URL}/quiz/fillin`, body);
   }
 
@@ -284,6 +374,32 @@ export class QuestionnaireService {
    * @returns 包含 UserVoList 的回應
    */
   getFeedback(quizId: number): Observable<any> {
+    if (this.isMockMode()) {
+      // 回傳假的統計數據，讓 Chart.js 圖表有資料可以畫
+      return of({
+        code: 200,
+        userVoList: [
+          { username: 'Alice', phone: '0911111111', email: 'alice@demo.com', age: 22,
+            answerVoList: [
+              { question: { questionId: 1 }, answer: '何廢料 (建國中學)' },
+              { question: { questionId: 2 }, answer: '才華洋溢;外型出眾' },
+              { question: { questionId: 3 }, answer: '加油！你是最棒的！' }
+            ]},
+          { username: 'Bob', phone: '0922222222', email: 'bob@demo.com', age: 25,
+            answerVoList: [
+              { question: { questionId: 1 }, answer: '+7/77 (金女中)' },
+              { question: { questionId: 2 }, answer: '性格親民' },
+              { question: { questionId: 3 }, answer: '繼續努力，超越自己！' }
+            ]},
+          { username: 'Carol', phone: '0933333333', email: 'carol@demo.com', age: 20,
+            answerVoList: [
+              { question: { questionId: 1 }, answer: '何廢料 (建國中學)' },
+              { question: { questionId: 2 }, answer: '才華洋溢;學習成績優異' },
+              { question: { questionId: 3 }, answer: '支持你到底！' }
+            ]}
+        ]
+      });
+    }
     return this.http.get<any>(`${this.API_URL}/quiz/feedback?quizId=${quizId}`);
   }
 

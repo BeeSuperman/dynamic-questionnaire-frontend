@@ -310,7 +310,9 @@ export class QuestionnaireFillComponent implements OnInit {
     this.router.navigate(['/list']);
   }
 
-  private parseOptions(optionsStr: string): any[] {
+  private parseOptions(optionsStr: any): any[] {
+    // Mock 資料直接傳陣列，不需要解析，直接回傳
+    if (Array.isArray(optionsStr)) return optionsStr;
     if (!optionsStr) return [];
     try {
       // 嘗試解析 JSON

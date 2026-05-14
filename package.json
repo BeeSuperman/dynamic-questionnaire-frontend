@@ -2,13 +2,13 @@
   "name": "dynamic-questionnaire",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build dynamic-questionnaire",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "deploy":"ng pages"
-  },
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build --base-href /dynamic-questionnaire-frontend/",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test",
+  "deploy": "npm run build && gh-pages -d dist/dynamic-questionnaire/browser"
+},
   "private": true,
   "dependencies": {
     "@angular/animations": "^19.0.0",

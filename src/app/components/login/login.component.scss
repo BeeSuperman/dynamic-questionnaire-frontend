@@ -3,21 +3,113 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #a5a5a5; // 參考 PPT 的灰色背景
+  background-color: #a5a5a5;
 
   .login-card {
-    background: #fdf5e6; // 淺米色背景
+    background: #fdf5e6;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     text-align: center;
 
     .login-header {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       h1 { font-size: 2.5rem; color: #8b4513; margin: 0; }
-      p { color: #666; margin-top: 5px; }
+    }
+
+    // ✨ Demo 體驗區塊
+    .demo-section {
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff9e6, #fffbf0);
+      border: 2px dashed #d4a843;
+      border-radius: 14px;
+      padding: 16px;
+
+      .demo-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 12px;
+
+        .demo-badge {
+          background: linear-gradient(135deg, #f6c90e, #e6a817);
+          color: #5a3e00;
+          font-size: 0.72rem;
+          font-weight: 700;
+          padding: 3px 10px;
+          border-radius: 20px;
+          letter-spacing: 0.05em;
+          box-shadow: 0 2px 6px rgba(214, 168, 67, 0.4);
+        }
+
+        .demo-desc {
+          font-size: 0.82rem;
+          color: #7a5c2e;
+        }
+      }
+
+      .demo-buttons {
+        display: flex;
+        gap: 10px;
+
+        .btn-demo {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 11px 10px;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          text-align: left;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+          }
+          &:active { transform: translateY(0); }
+
+          .demo-icon { font-size: 1.6rem; flex-shrink: 0; }
+
+          .demo-btn-text {
+            display: flex;
+            flex-direction: column;
+            strong { font-size: 0.85rem; display: block; }
+            small { font-size: 0.7rem; opacity: 0.85; margin-top: 2px; }
+          }
+        }
+
+        .btn-demo-admin {
+          background: linear-gradient(135deg, #7b3f00, #a0522d);
+          color: #fff;
+        }
+
+        .btn-demo-user {
+          background: linear-gradient(135deg, #1a5276, #2471a3);
+          color: #fff;
+        }
+      }
+    }
+
+    // 分隔線
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      color: #aaa;
+      font-size: 0.8rem;
+
+      &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #ddd;
+      }
     }
 
     .input-group {
@@ -28,7 +120,7 @@
         width: 100%;
         padding: 12px 15px;
         border: none;
-        background: #ced47d; // PPT 中的黃綠色輸入框
+        background: #ced47d;
         border-radius: 10px;
         font-size: 1rem;
         box-sizing: border-box;
@@ -52,7 +144,7 @@
       width: 100%;
       padding: 12px;
       border: none;
-      background-color: #8b2d2d; // 深紅色按鈕
+      background-color: #8b2d2d;
       color: white;
       font-size: 1.1rem;
       border-radius: 10px;
@@ -69,23 +161,13 @@
       a { color: #8b4513; text-decoration: none; margin-left: 5px; font-weight: bold; }
     }
   }
-  /* --- SweetAlert2 登錄界面字體微調 --- */
-::ng-deep {
-  .swal2-title {
-    font-size: 1.5rem !important; /* 標題適中 */
-    color: #444 !important;
-  }
-  .swal2-html-container {
-    font-size: 1.1rem !important; /* 內容字體縮小 */
-    color: #666 !important;
-  }
-  .swal2-confirm {
-    padding: 10px 30px !important; /* 按鈕不要太臃腫 */
-    font-size: 1rem !important;
-  }
-  .swal2-icon {
-    transform: scale(0.9) !important; /* 圖示稍微縮小 */
+
+  /* --- SweetAlert2 字體微調 --- */
+  ::ng-deep {
+    .swal2-title { font-size: 1.5rem !important; color: #444 !important; }
+    .swal2-html-container { font-size: 1.1rem !important; color: #666 !important; }
+    .swal2-confirm { padding: 10px 30px !important; font-size: 1rem !important; }
+    .swal2-icon { transform: scale(0.9) !important; }
   }
 }
 
-}
