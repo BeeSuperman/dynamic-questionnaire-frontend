@@ -80,7 +80,7 @@ export class QuestionnaireService {
   // -----[新增] 這是後端的網址
   // 新增這行：我們現在直接連到 localhost:8080，因為後端沒有 /api/quiz 了
   // [修正] 指向 8080，這是後端 Spring Boot 啟動的 Port
-  private readonly API_URL = 'http://localhost:8080';
+  private readonly API_URL = 'http://15.135.89.123:8080';
   // -----[新增修改] 這裡把 HttpClient 注入進來
   constructor(private http: HttpClient) {
     // [刪除] 不需要再塞假資料了，因為我們要直接看資料庫

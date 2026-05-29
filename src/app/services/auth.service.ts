@@ -8,7 +8,7 @@ import { Observable, tap, of } from 'rxjs';
 export class AuthService {
   private readonly STORAGE_KEY = 'user_login_status';
   private readonly USER_KEY = 'current_user';
-  private readonly API_URL = 'http://localhost:8080';
+  private readonly API_URL = 'http://15.135.89.123:8080';
 
   constructor(private http: HttpClient) { }
 
